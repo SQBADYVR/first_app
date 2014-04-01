@@ -1,0 +1,74 @@
+<head>
+  <title>jquery-trial</title>
+</head>
+
+<body>
+  {{> hello}}
+  <table id="DFMEA" class="mainTable">
+  <tbody>
+  {{> mainTable}}
+  </tbody>
+  </table>
+</body>
+
+<template name="mainTable">
+{{#if any_list_selected}}
+    <div id="items-view">
+      {{#if loading}}
+      {{else}}
+		{{#each DesFctn}}
+			<td id={{_id}} class= "DesignFunction">
+			{{content}}
+			</td>
+			{{#each FMode}}
+				<td id={{_id}} class="FailureMode">
+				{{content}}
+				</td>
+				{{#each FEffect}}
+					<td id={{_id}} class="FailureEffect">
+					{{content}}
+					</td>
+					<td class="SEV">
+					{{SEV}}
+					</td>
+					<td class="Classification">
+					{{Class}}
+					</td>
+					{{#each Cause}}
+						<td id={{_id}} class="Cause">
+						{{content}}
+						</td>
+						<td class="OCC">
+						{{OCC}}
+						</td>
+						<td class="DesignControl">
+						{{DesignControl}}
+						</td>
+						<td class=DET>
+						{{DET}}
+						</td>
+						<td>
+						<span class="RPN"></span>
+						</td>
+						{{rowInsert}}
+					{{/each}}
+				{{/each}}
+			{{/each}}
+		{{/each}}
+	{{/if}}
+	</div>
+{{/if}}
+</template>
+
+
+<template name="hello">
+  <h1>Hello World!</h1>
+  {{greeting}}
+  <input type="button" value="Click" />
+</template>
+
+<template name="nodes">
+</template>
+
+<template name="lists">
+</template>

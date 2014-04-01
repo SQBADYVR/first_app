@@ -57,6 +57,7 @@ Meteor.startup(function () {
   
 
   if (Nodes.find().count() === 0) {// populate with some data
+    console.log("populating Nodes");
       var topNode=Nodes.insert({
        categoryName: "RootNode",
         parentCategory: dfmea_id,
@@ -75,7 +76,7 @@ Meteor.startup(function () {
         subcategories: [],
         content: "Design Function " + i,
         timestamp: timestamp,
-        sortOrder: i*10000
+        sortOrder: (i+1)*10000
       });
       timestamp+=1;
       Nodes.update({_id: topNode}, {$push: {subcategories: fctn_id}});
@@ -86,7 +87,7 @@ Meteor.startup(function () {
           subcategories: [],
           content: "Doesn't work " + j,
           timestamp: timestamp,
-          sortOrder: j*10000
+          sortOrder: (j+1)*10000
         });
         timestamp+=1;
         Nodes.update({_id: fctn_id}, {$push: {subcategories: fmode_id}});
@@ -97,27 +98,23 @@ Meteor.startup(function () {
             subcategories: [],
             content: "Everyone dies " + k,
             timestamp: timestamp,
-            sortOrder: k*10000,
+            sortOrder: (k+1)*10000,
             SEV:  (Math.floor(Math.random()*10+1)),
             Class: ""
           });
           timestamp+=1;
           Nodes.update({_id: fmode_id}, {$push: {subcategories: effects_id}});
-          for ( l = 0; l < Math.floor(Math.random() * 5) + 1; l++) {
+          for (l = 0; l < Math.floor(Math.random() * 5) + 1; l++) {
             var cause_id = Nodes.insert({
               categoryName: "FailureCause",
-              parentCategory: class_id,
+              parentCategory: effects_id,
               subcategories: [],
               content: "Something broke " + l,
               timestamp: timestamp,
-              sortOrder: l*10000,
+              sortOrder: (l+1)*10000,
               OCC:  (Math.floor(Math.random()*10+1)),
               DesignControl: "Test regimen that has a long list of tests "+l,
-              DET:  (Math.floor(Math.random()*10+1)),
-
-
-
-
+              DET:  (Math.floor(Math.random()*10+1))
             });
             timestamp+=1;   
             Nodes.update({_id: effects_id}, {$push: {subcategories: cause_id }});       
@@ -126,6 +123,7 @@ Meteor.startup(function () {
         };
       };
   }
+
   Nodes.allow(
   {
   insert: function (userId, doc) {
