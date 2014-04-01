@@ -1,5 +1,6 @@
 DFMEAs= new Meteor.Collection('dfmeas');
 Nodes=new Meteor.Collection('nodes');
+RowNum=0;
 Session.set('dfmea_id',null);
   // Client-side JavaScript, bundled and sent to client.
 
@@ -29,6 +30,17 @@ Session.setDefault('editing_itemname', null);
 
 // Define Minimongo collections to match server/publish.js.
 //Lists = new Meteor.Collection("lists");
+
+$(document).ready(function (){
+  console.log("Document ready");
+  var i;
+  for (i=0; i< RowNum; i+=1) {
+    var rowKey=".row"+RowNum;
+    console.log(rowKey);
+    $(rowKey).wrapAll("<tr>");
+    console.log("should be done");
+    };
+})
 
 // as "ok" or "cancel".
 var okCancelEvents = function (selector, callbacks) {
@@ -136,7 +148,7 @@ Meteor.startup(function () {
 
 Template.mainTable.helpers({
   rowInsert: function() {
-    ;
+    RowNum+=1;
   },
   DesFctn: function() {
     var dfmeaID=Session.get('dfmea_id');
@@ -147,6 +159,7 @@ Template.mainTable.helpers({
       console.log(parent._id);
       var retval = Nodes.find({parentCategory: parent._id},{sortOrder:1}).fetch();
       console.log(retval);
+      RowNum=0;
       return retval;
     }
   },
@@ -163,9 +176,19 @@ Template.mainTable.helpers({
     return retval;
   },
   Cause: function() {
+    console.log("in cause");
     console.log(this);
     var retval=Nodes.find({parentCategory: this._id},{sortOrder:1}).fetch();
     console.log(retval);
     return retval;
+  },
+  rowNum: function() {
+    return RowNum;
+  },
+  fixRows: function() {
+    var i;
+    for (i=0; i<RowNum; i++) {
+      $(".row"+i).wrapAll("<tr>");
+    }
   }
 });

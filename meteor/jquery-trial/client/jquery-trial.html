@@ -17,44 +17,45 @@
       {{#if loading}}
       {{else}}
 		{{#each DesFctn}}
-			<td id={{_id}} class= "DesignFunction">
+			<td id={{_id}} class= "DesignFunction row{{rowNum}}">
 			{{content}}
 			</td>
 			{{#each FMode}}
-				<td id={{_id}} class="FailureMode">
+				<td id={{_id}} class="FailureMode row{{rowNum}}">
 				{{content}}
 				</td>
 				{{#each FEffect}}
-					<td id={{_id}} class="FailureEffect">
+					<td id={{_id}} class="FailureEffect row{{rowNum}}">
 					{{content}}
 					</td>
-					<td class="SEV">
+					<td class="SEV row{{rowNum}}">
 					{{SEV}}
 					</td>
-					<td class="Classification">
+					<td class="Classification row{{rowNum}}">
 					{{Class}}
 					</td>
 					{{#each Cause}}
-						<td id={{_id}} class="Cause">
+						<td id={{_id}} class="Cause row{{rowNum}}">
 						{{content}}
 						</td>
-						<td class="OCC">
+						<td class="OCC row{{rowNum}}">
 						{{OCC}}
 						</td>
-						<td class="DesignControl">
+						<td class="DesignControl row{{rowNum}}">
 						{{DesignControl}}
 						</td>
-						<td class=DET>
+						<td class="DET row{{rowNum}}">
 						{{DET}}
 						</td>
-						<td>
-						<span class="RPN"></span>
+						<td class="RPN row{{rowNum}}">
+						<span class="RPN-text"></span>
 						</td>
 						{{rowInsert}}
 					{{/each}}
 				{{/each}}
 			{{/each}}
 		{{/each}}
+		{{fixRows}}
 	{{/if}}
 	</div>
 {{/if}}
