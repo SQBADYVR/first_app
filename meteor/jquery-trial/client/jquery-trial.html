@@ -13,14 +13,19 @@
 
 <template name="mainTable">
 {{#if any_list_selected}}
+list selected
     <div id="items-view">
       {{#if loading}}
+      Loading...
       {{else}}
+      Not loading
 		{{#each DesFctn}}
+			In function
 			<td id={{_id}} class= "DesignFunction row{{rowNum}}">
 			{{content}}
 			</td>
 			{{#each FMode}}
+			In Fmode
 				<td id={{_id}} class="FailureMode row{{rowNum}}">
 				{{content}}
 				</td>
@@ -55,7 +60,6 @@
 				{{/each}}
 			{{/each}}
 		{{/each}}
-		{{fixRows}}
 	{{/if}}
 	</div>
 {{/if}}

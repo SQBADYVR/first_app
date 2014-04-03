@@ -2,6 +2,7 @@ DFMEAs= new Meteor.Collection('dfmeas');
 Nodes=new Meteor.Collection('nodes');
 RowNum=0;
 Session.set('dfmea_id',null);
+Session.set('rowNum',0);
   // Client-side JavaScript, bundled and sent to client.
 
 Session.set('dfmea_id',null);
@@ -31,16 +32,10 @@ Session.setDefault('editing_itemname', null);
 // Define Minimongo collections to match server/publish.js.
 //Lists = new Meteor.Collection("lists");
 
-$(document).ready(function (){
-  console.log("Document ready");
-  var i;
-  for (i=0; i< RowNum; i+=1) {
-    var rowKey=".row"+RowNum;
-    console.log(rowKey);
-    $(rowKey).wrapAll("<tr>");
-    console.log("should be done");
-    };
-})
+wrapTableRows=function() {
+  var lastRow=Session.get('rowNum');
+  $(".row"+lastRow).wrapAll("<tr>");
+}
 
 // as "ok" or "cancel".
 var okCancelEvents = function (selector, callbacks) {
@@ -74,6 +69,7 @@ var activateInput = function (input) {
 var dfmeaHandle = Meteor.subscribe('dfmeas', function () {
   if (!Session.get('dfmea_id')) {
     var dfmea = DFMEAs.findOne({name: "Test FMEA 1"}, {sort: {name: 1}});
+    console.log(dfmea);
     if (dfmea) {
        Router.setList(dfmea._id);
     }
@@ -148,38 +144,29 @@ Meteor.startup(function () {
 
 Template.mainTable.helpers({
   rowInsert: function() {
-    RowNum+=1;
+ //     Session.set("rowNum",Session.get("rowNum")+1);
+    rowNum=Session.get("rowNum");
+    console.log(rowNum);
   },
   DesFctn: function() {
     var dfmeaID=Session.get('dfmea_id');
-    console.log(dfmeaID);
     if (!(dfmeaID === undefined) && !(dfmeaID === null)) {
       var parent = Nodes.findOne({parentCategory: dfmeaID});
-      console.log(parent);
-      console.log(parent._id);
       var retval = Nodes.find({parentCategory: parent._id},{sortOrder:1}).fetch();
-      console.log(retval);
       RowNum=0;
       return retval;
     }
   },
   FMode: function() {
-    console.log(this);
     var retval=Nodes.find({parentCategory: this._id},{sortOrder:1}).fetch();
-    console.log(retval);
     return retval;
   },
   FEffect: function() {
-    console.log(this);
     var retval=Nodes.find({parentCategory: this._id},{sortOrder:1}).fetch();
-    console.log(retval);
     return retval;
   },
   Cause: function() {
-    console.log("in cause");
-    console.log(this);
     var retval=Nodes.find({parentCategory: this._id},{sortOrder:1}).fetch();
-    console.log(retval);
     return retval;
   },
   rowNum: function() {
