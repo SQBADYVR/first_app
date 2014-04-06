@@ -3,7 +3,6 @@
 </head>
 
 <body>
-  {{> hello}}
   <table id="DFMEA" class="mainTable">
   <tbody>
   {{> mainTable}}
@@ -11,21 +10,25 @@
   </table>
 </body>
 
-<template name="mainTable">
+<template name="loadit">
 {{#if any_list_selected}}
-list selected
     <div id="items-view">
       {{#if loading}}
       Loading...
-      {{else}}
-      Not loading
+      {{else}}	
+      	{{> mainTable}}
+      {{/if}}
+	</div>
+{{/if}}
+</template>
+
+
+<template name="mainTable">
 		{{#each DesFctn}}
-			In function
 			<td id={{_id}} class= "DesignFunction row{{rowNum}}">
 			{{content}}
 			</td>
 			{{#each FMode}}
-			In Fmode
 				<td id={{_id}} class="FailureMode row{{rowNum}}">
 				{{content}}
 				</td>
@@ -60,9 +63,7 @@ list selected
 				{{/each}}
 			{{/each}}
 		{{/each}}
-	{{/if}}
-	</div>
-{{/if}}
+
 </template>
 
 

@@ -3,23 +3,19 @@
 </head>
 
 <body>
-  <div id="top-tag-filter">
-    {{> tag_filter}}
+{{> navHeader}}
+<div class="relative-wrapper">
+ <div id="side-pane">
+    {{> lists}}
   </div>
-
   <div id="main-pane">
     {{> nodes}}
   </div>
-
-  <div id="side-pane">
-    {{> lists}}
-  </div>
+</div>
 </body>
 
 <template name="lists">
-
   {{#if loading}}
-
   {{/if}}
 </template>
 
@@ -29,85 +25,84 @@
       {{#if loading}}
         Loading...
       {{else}}
-        <div id="new-node-box">
-          <input type="text" id="new-node" placeholder="New item" />
-        </div>
-        <ul id="item-list">
-         {{#each nodes}}
-            {{> node_item}}
-         {{/each}}
-        </ul>
-      {{/if}}
-    </div>
-  {{/if}}
-</template>
-
-<template name="node_item">
-  <li class="node {{done_class}}">
-    {{#if editing}}
-      <div class="edit">
-        <input id="node-input" type="text" value="{{content}}" />
-      </div>
-    {{else}}
-      <div class="destroy"></div>
-      <div class="display">
-        <div class="node-text">{{content}}</div>
-      </div>
-    {{/if}}
-<!--    <div class="item-tags">
-      {{#each tag_objs}}
-        <div class="tag removable_tag">
-          <div class="name">{{tag}}</div>
-          <div class="remove"></div>
-        </div>
-      {{/each}}
-      {{#if adding_tag}}
-        <div class="tag edittag">
-          <input type="text" id="edittag-input" value="" />
-        </div>
-      {{else}}
-        <div class="tag addtag">
-          +tag
-        </div>
-      {{/if}}-->
-    </div>
-  </li>
-</template>
-
-<template name="displayFMEAbody">
-  {{#each node}}
-    {{#if parent_category}}
-      <div class="node-{{category_class}}">
-        {{#if rating_type}}
-          <div class="children-wrapper-{{rating_type}}">
-            <div class="content-{{rating_type}}">
-            {{rating}}
-            </div>
-          </div>
+        {{#if pullDown}}
+          <table id="DFMEATitleBlock">
+            
+          </table>
         {{/if}}
-      {{#if subcategories}}
-        <div class="children-wrapper-{{category_class}}">
-        {{> displayFMEAbody}}
+        <div class="DFMEA_pane">
+        <table id="rounded-corner">
+        <thead class="fixedheader">
+        {{#each getHeaders}}
+          <th>
+          <div class="header-{{headername}}">
+          {{headername}}
+          </div>
+          </th>
+        {{/each}}
+        </thead>
+        <tbody class="DFMEA-table">
+        {{#each nodes}}
+          {{stuffArray}}
+ {{#each stackOfNodes}}
+     <tr>
+      {{#each rowList}}
+    <td rowspan={{countDET}} class="display display-{{getNodeType}}">
+    {{#if editing}}
+      {{#if numedit}}
+        <select name="{{getNodeType}}" id="item-input" class="item-input">
+          <option value="10">10</option>
+          <option value="9">9</option>
+          <option value="8">8</option>
+          <option value="7">7</option>
+          <option value="6">6</option>
+          <option value="5">5</option>
+          <option value="4">4</option>
+          <option value="3">3</option>
+          <option value="2">2</option>
+          <option value="1">1</option>
+        </select>
+    {{else}}
+            <input type="text" class="item-input" id="item-input" value="{{getNodeContext}}" />
+      {{/if}}
+    {{else}}
+      {{getNodeContext}}
+    {{/if}}
+       <div class="icon-set">
+           {{#if canAdd}}
+            <button type="button" class="btn btn-add btn-success btn-xs"><span title="Add new {{getNodeType2}} after this one" class="glyphicon glyphicon-plus"> </span></button>
+          {{/if}}
+          {{#if canCopy}}
+            <button type="button" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-heart"></span></button>
+          {{/if}}
+          {{#if canClone}}
+            <button type="button" class="btn btn-success btn-xs" disabled="disabled"><span class="glyphicon glyphicon-link"></span></button>
+          {{/if}}
+          {{#if canDelete}}
+            <button type="button" class="btn btn-remove btn-danger btn-xs"><span title="Delete this {{getNodeType2}} and all its children." class="glyphicon glyphicon-trash"></span></button>
+          {{/if}}
+          {{#if canHide}}
+            <button type="button" class="btn btn-success btn-xs" disabled="disabled"><span class="glyphicon glyphicon-eye-close"></span></button>
+          {{/if}}
+       </div>
+      </td>
+      {{#if DETcell}}
+        <td class="display-RPN">
+        {{RPNcalc}}
+        </td>
+      {{/if}}
+  {{/each}}
+    </tr>
+  {{/each}}
+        {{/each}}
+        </tbody>
+        </table>
         </div>
       {{/if}}
-      </div>
-    {{else}}
-      {{>displayFMEAbody}}
-    {{/if}}
-  {{/each}} 
-</template>
-
-<template name="processContent">
-  {{#if editing}}
-        <div class="edit content-{{category_class}}">
-          <input id="item-input" type="text" value="{{content}}" />
-        </div>
-  {{else}}
-    <div class="content-{{category_class}}">
-    {{content}}
     </div>
   {{/if}}
 </template>
+
 
 <template name="tag_filter">
   <div id="tag-filter" class="tag-list">
@@ -119,3 +114,5 @@
     {{/each}}
   </div>
 </template>
+
+

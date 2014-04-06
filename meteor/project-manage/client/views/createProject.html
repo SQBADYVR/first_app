@@ -1,0 +1,53 @@
+<template name="manageProject">
+	{{#with enterManageProject}}
+	<div class="permission-wrapper">
+    <div class="edit">
+    	  <h3>Project Name</h3>
+          <input class="project-name-input" id="project-name-input" type="text" value="{{projectName}}" placeholder="{{projectName}}" size="100" />
+    </div>
+    <div class="projectType">
+    	<h3>Privacy Setting</h3>
+    	<div class="radio">
+  			<label class="{{isPublic}}">
+  			  	<input type="radio" name="optionsRadios" id="public" value="public" >
+  			  	<span class="glyphicon glyphicon-globe"></span> Public Project:  Anyone can view, print, or download.  You decide who can edit or administer the project data.
+ 			 </label>
+		</div>
+		<div class="radio">
+ 			<label class="{{isNotPublic}}">
+    			<input type="radio" name="optionsRadios" id="private" value="private">
+    			<span class="glyphicon glyphicon-lock"></span> Private Project:  You decide who can administer, edit, download, print, or view project data.  All users except view-only must be paid subscribers.
+  			</label>
+		</div>
+	</div>
+	<h3>Project Members</h3>
+	<div class="addProjectUsers">
+	  Enter name or email of users, or enter group name to add group of users.
+		<div class="addUsers">
+          <input class="user-name-input" id="project-user-name-input" type="text" value="{{name}}" placeholder="User Name, User email, or Group Name" size="100"/>
+      	</div>
+	</div>
+    <div class="user-permissions">
+    <ul class="userNames">
+    {{#each projectMembers}}
+    	<li class="userRow">
+    		<div class="lineWrapper">
+    		<div class="destroyUser"></div>
+        	<div class="displayUser">
+            	 <div class="userNames">{{email}}</div>
+        	</div>
+ 	        <div class="projectPermissions">
+    	    	<div class="admin"><button type="button" class="btn btn-add btn-success btn-sm"><span title="Administrator" class="glyphicon glyphicon-cog {{isAdmin}}"> Admin</span></button></div>
+        		<div class="edit"><button type="button" class="btn btn-add btn-success btn-sm"><span title="Edit" class="glyphicon glyphicon-pencil {{canEdit}}"> Edit</span></button></div>
+        		<div class="download"><button type="button" class="btn btn-add btn-success btn-sm"><span title="Download" class="glyphicon glyphicon-download-alt {{canDownload}}"> Download</span></button></div>
+        		<div class="print"><button type="button" class="btn btn-add btn-success btn-sm"><span title="Print" class="glyphicon glyphicon-print {{canPrint}}"> Print</span></button></div>
+        		<div class="view"><button type="button" class="btn btn-add btn-success btn-sm"><span title="View" class="glyphicon glyphicon-eye-open {{canView}}"> View</span></button></div>
+       		</div>
+       		</div>
+       	</li>
+    {{/each}}
+    </ul>
+    </div>
+    </div>
+    {{/with}}
+</template>

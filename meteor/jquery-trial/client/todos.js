@@ -32,10 +32,6 @@ Session.setDefault('editing_itemname', null);
 // Define Minimongo collections to match server/publish.js.
 //Lists = new Meteor.Collection("lists");
 
-wrapTableRows=function() {
-  var lastRow=Session.get('rowNum');
-  $(".row"+lastRow).wrapAll("<tr>");
-}
 
 // as "ok" or "cancel".
 var okCancelEvents = function (selector, callbacks) {
@@ -59,6 +55,7 @@ var okCancelEvents = function (selector, callbacks) {
     };
   return events;
 };
+
 
 var activateInput = function (input) {
   input.focus();
@@ -91,11 +88,12 @@ Template.lists.loading = function () {
 };
 
 var nodesHandle=null;
-Template.mainTable.loading = function () {
+
+Template.loadit.loading = function () {
   return nodesHandle && !nodesHandle.ready();
 };
 
-Template.mainTable.any_list_selected = function () {
+Template.loadit.any_list_selected = function () {
   return !Session.equals('dfmea_id', null);
 };
 
@@ -145,15 +143,18 @@ Meteor.startup(function () {
 Template.mainTable.helpers({
   rowInsert: function() {
  //     Session.set("rowNum",Session.get("rowNum")+1);
-    rowNum=Session.get("rowNum");
-    console.log(rowNum);
+    RowNum++;
   },
   DesFctn: function() {
     var dfmeaID=Session.get('dfmea_id');
-    if (!(dfmeaID === undefined) && !(dfmeaID === null)) {
+    console.log("dfmeaID = "+dfmeaID);
+    if (!(dfmeaID === undefined) && !(dfmeaID === null) && !(nodesHandle === undefined)) {
       var parent = Nodes.findOne({parentCategory: dfmeaID});
+      console.log(parent);
+      console.log(parent._id);
       var retval = Nodes.find({parentCategory: parent._id},{sortOrder:1}).fetch();
-      RowNum=0;
+      console.log(retval);
+      RowNum=0
       return retval;
     }
   },
@@ -171,11 +172,22 @@ Template.mainTable.helpers({
   },
   rowNum: function() {
     return RowNum;
-  },
-  fixRows: function() {
-    var i;
-    for (i=0; i<RowNum; i++) {
-      $(".row"+i).wrapAll("<tr>");
-    }
   }
 });
+
+
+Meteor.setTimeout(function() {
+  Template.mainTable.rendered = function() {
+   var i=0;
+   console.log(RowNum);
+   console.log("In mainTable rendered function")
+   console.log (i);
+   console.log(this);
+   console.log(this.$(".row"+i));
+   console.log(this.findAll);
+   this.$(".row"+i).wrapAll("<tr>");
+  
+  };
+},1000);
+
+ 

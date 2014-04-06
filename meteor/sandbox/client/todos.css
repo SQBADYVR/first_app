@@ -12,10 +12,11 @@ html, body {
 }
 
 body {
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.5;
     background: #eeeeee;
     color: #333333;
+    height: 100%;
 }
 
 body, input {
@@ -36,6 +37,95 @@ h3 {
     font-size: 120%;
     padding: 8px 6px;
     text-align: center;
+}
+
+table {
+    *border-collapse: collapse; /* IE7 and lower */
+    border-spacing: 0;
+    border: 1px solid #333333;
+    width: 100%;    
+}
+
+div.header-notUsed
+  {
+  transform:rotate(90deg);
+  -ms-transform:rotate(90deg); /* IE 9 */
+  -webkit-transform:rotate(90deg); /* Opera, Chrome, and Safari */
+}
+
+#rounded-corner
+{
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 12px;
+    margin: 25px;
+    width: 95%;
+    text-align: left;
+    border-collapse: collapse;
+}
+#rounded-corner thead th.rounded-company
+{
+    background: #b9c9fe url('table-images/left.png') left -1px no-repeat;
+}
+#rounded-corner thead th.rounded-q4
+{
+    background: #b9c9fe url('table-images/right.png') right -1px no-repeat;
+}
+#rounded-corner th
+{
+    padding: 8px;
+    font-weight: normal;
+    font-size: 13px;
+    color: #039;
+    background: #b9c9fe;
+    border-right: 1px solid #333333;
+}
+#rounded-corner td
+{
+    padding: 8px;
+    background: #e8edff;
+    border-top: 1px solid #666666;
+    border-right: 1px solid #cccccc;
+    color: #669;
+}
+
+#rounded-corner tfoot td.rounded-foot-left
+{
+    background: #e8edff url('table-images/botleft.png') left bottom no-repeat;
+}
+#rounded-corner tfoot td.rounded-foot-right
+{
+    background: #e8edff url('table-images/botright.png') right bottom no-repeat;
+}
+
+
+
+
+.display-DesignFunction{
+   
+}
+
+.display-FailureMode {
+    
+}
+
+.display-FailureEffect {
+    
+}
+
+.display-FailureCause {
+   
+}
+
+.display-DesignControl {
+
+}
+
+.display-SEV, .display-OCC, .display-RPN, .display-DET, .display-Class{
+ text-align:center;
+}
+
+#rounded-corner td .display-DET {
+    border-right: none;
 }
 
 #top-tag-filter, #main-pane, #side-pane, #bottom-pane {
@@ -62,18 +152,23 @@ h3 {
 #main-pane {
     top: 45px;
     bottom: 0;
-    left: 220px;
+    left: 50px;
     overflow: auto;
 }
 
 #side-pane {
-    width: 200px;
+    width: 50px;
     right: auto;
     overflow: auto;
     background: #eee;
     border-right: 1px solid #999;
     background: #ddd;
 }
+
+.relative-wrapper {
+   
+}
+
 
 .tag {
     cursor: pointer;
@@ -198,6 +293,7 @@ h3 {
 
 #item-list .done .node-text {
     text-decoration: line-through;
+    position: absolute;
     color: #999;
 }
 
@@ -261,3 +357,30 @@ h3 {
     width: 80px;
 }
 
+.glyphicon {
+    color: #ffffff;
+}
+
+.icon-set {
+   padding: 2px;
+   white-space: nowrap;
+   vertical-align: bottom;
+ }
+
+.login-link-text {
+    color: #999;
+}
+
+a.login-link-test:active {
+    color: #ffffff;
+    }
+
+
+#rounded-corner tbody td:hover 
+{
+    background: #d0dafd;
+}
+
+#rounded-corner tbody td .display-RPN:hover {
+    background: #e8edff;
+}

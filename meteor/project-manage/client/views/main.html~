@@ -1,0 +1,11 @@
+ <head>
+ <title>designCloud&#8482; Manage Your Projects</title>
+</head>
+ <body>
+ <div class="container">
+{{> header}}
+<div id="main" class="row-fluid">
+{{> manageProject}}
+</div>
+</div>
+</body>
