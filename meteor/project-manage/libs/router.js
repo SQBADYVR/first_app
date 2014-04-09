@@ -5,12 +5,23 @@ Router.map(function() {
 		layoutTemplate: 'layout'
 		});
 
+	this.route('manageAccount',{
+		path: '/manageAccount',
+		layoutTemplate: 'layout',
+		waitOn: function () {
+			return [Meteor.subscribe('teammates') && Accounts.loginServicesConfigured()];
+		},
+		onBeforeAction: function() {
+			console.log('in router');
+		}
+	})
+
 	this.route('manageProjects', {
 		path:'/manageProjects',
 		template: 'manageProject',
 		layoutTemplate: 'layout',
 		waitOn: function () {  // wait for the subscription to be ready; see below
-   	   	return [Meteor.subscribe('projects')];
+   	   	return [Meteor.subscribe('projects') && Accounts.loginServicesConfigured()];
     	},
 		onBeforeAction: function() {
 			var newProject=null;
@@ -43,5 +54,10 @@ Router.map(function() {
 				return currProject;
 			}
 		}
+	});
+
+	this.route('editDFMEA', {
+		path: '/editDFMEA',
+		layoutTemplate: 'layout'
 	});
 });

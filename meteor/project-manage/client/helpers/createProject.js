@@ -4,6 +4,10 @@ Template.manageProject.helpers ({
 	projectMembers: function() {
 		return this.projectMembers;
 	},
+	projectMember: function() {
+		console.log(this);
+		return this;
+	},
 	isPublic: function() {
 		if (this.publicProject)
 		{
@@ -45,6 +49,27 @@ Template.manageProject.helpers ({
 			console.log("No dice");
 		}
 		return null;
+	},
+	isAdmin: function() {
+		var self=this;
+		var currProject=Session.get("currentProject");
+		console.log ("In isAdmin with currProject ");
+		console.log(currProject);
+		if ((currProject === null) || (currProject === undefined))
+		{
+			return "";
+		}
+		else
+		{
+			var currProjectObject=Projects.findOne(currProject);
+			console.log(currProjectObject);
+			console.log(currProjectObject.projectAdministrators);
+			console.log(self);
+			if (currProjectObject.projectAdministrators.indexOf(self) === -1) // is not an administrator
+				return "";
+			else
+				return "Admin";
+		}
 	},
 	enterManageProject: function() {
 		//assumes called with the session variable currentProject set to the current project id.  
@@ -107,10 +132,7 @@ var activateInput = function (input) {
 
 
 Template.manageProject.events ({
-  'click .check': function () {
-    return null;
-  },
-
+  
   'click .destroy': function () {
     return null;
   },

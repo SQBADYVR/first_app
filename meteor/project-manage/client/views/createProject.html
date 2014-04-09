@@ -22,7 +22,7 @@
 	</div>
 	<h3>Project Members</h3>
 	<div class="addProjectUsers">
-	  Enter name or email of users, or enter group name to add group of users.
+	  Enter name or email to invite users to your project, or enter group name to add group of users.
 		<div class="addUsers">
           <input class="user-name-input" id="project-user-name-input" type="text" value="{{name}}" placeholder="User Name, User email, or Group Name" size="100"/>
       	</div>
@@ -30,14 +30,14 @@
     <div class="user-permissions">
     <ul class="userNames">
     {{#each projectMembers}}
-    	<li class="userRow">
+    	<li class="userRow" id="{{projectMember}}">
     		<div class="lineWrapper">
     		<div class="destroyUser"></div>
         	<div class="displayUser">
             	 <div class="userNames">{{email}}</div>
         	</div>
  	        <div class="projectPermissions">
-    	    	<div class="admin"><button type="button" class="btn btn-add btn-success btn-sm"><span title="Administrator" class="glyphicon glyphicon-cog {{isAdmin}}"> Admin</span></button></div>
+    	    	<div class="admin"><button type="button" class="btn btn-add btn-success btn-sm {{isAdmin}}"><span title="Administrator" class="glyphicon glyphicon-cog"> Admin</span></button></div>
         		<div class="edit"><button type="button" class="btn btn-add btn-success btn-sm"><span title="Edit" class="glyphicon glyphicon-pencil {{canEdit}}"> Edit</span></button></div>
         		<div class="download"><button type="button" class="btn btn-add btn-success btn-sm"><span title="Download" class="glyphicon glyphicon-download-alt {{canDownload}}"> Download</span></button></div>
         		<div class="print"><button type="button" class="btn btn-add btn-success btn-sm"><span title="Print" class="glyphicon glyphicon-print {{canPrint}}"> Print</span></button></div>
