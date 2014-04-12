@@ -5,7 +5,7 @@ var myInvites=Meteor.subscribe('invited');
 
 var toggleAutoAccept=function() {
 	if (Accounts.loginServicesConfigured()) {
-		var myID=Meteor.userId;
+		var myID=Meteor.userId();
 		if (myID)
 			if (Meteor.user().includeDomain)
 				Meteor.users.update({_id: myID}, {$set: {includeDomain: false}})  // not working
@@ -17,7 +17,7 @@ var toggleAutoAccept=function() {
 Template.manageAccount.helpers ({
 	name: function() {
 		if (Accounts.loginServicesConfigured()) {
-			var myID=Meteor.userId;
+			var myID=Meteor.userId();
 			if (myID)
 		  		if (Meteor.user().username)
 					return Meteor.user().username;
@@ -28,7 +28,7 @@ Template.manageAccount.helpers ({
 	},
 	email: function() {
 		if (Accounts.loginServicesConfigured()) {
-			var myID=Meteor.userId;
+			var myID=Meteor.userId();
 			if (myID)
 		 		 if (Meteor.user().emails.length>0)
 			 	 return Meteor.user().emails[0].address;
@@ -37,7 +37,7 @@ Template.manageAccount.helpers ({
 	},
 	autoAcceptInvite: function() {
 		if (Accounts.loginServicesConfigured()) {
-			var myID=Meteor.userId;
+			var myID=Meteor.userId();
 			if (myID){
 		 		 if (Meteor.user().includeDomain)
 			 	 return "checked";
@@ -47,20 +47,25 @@ Template.manageAccount.helpers ({
 	},
 	colleague: function() {
 		if (Accounts.loginServicesConfigured()) {
-			var myID=Meteor.userId;
+			var myID=Meteor.userId();
 			if (myID) {
 				return Meteor.user().colleagues;
 			}
 		} else return null;
 	},
+	invitedUser: function () {
+		if (Accounts.loginServicesConfigured()) {
+			var myID=Meteor.userId();
+			if (myID) {
+				return Meteor.users.find({invitations: {$in: [myID]}}).fetch();  
+			}
+		} else return null;
+	},
 	nameOrEmail: function () {
 		if (myTeam.ready()) {
-			console.log ("into function nameorEmail");
-			console.log(this);
 			var self=this;
 			if (self) { 
-			var colleague=Meteor.users.findOne({_id:self});
-			console.log(colleague);
+			var colleague=Meteor.users.findOne({_id:String(self)});
 			if (colleague.username)
 				return colleague.username;
 			else if (colleague.emails.count()>0)

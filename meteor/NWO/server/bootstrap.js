@@ -1,3 +1,5 @@
+var adminId;
+
 
 makeid = function() {
     var text = "";
@@ -22,7 +24,7 @@ Meteor.startup(function() {
 	// create an admin user if they don't already exist
 
 	if (Meteor.users.find({username: 'admin'}).count() < 1) {
-		var tempID=Accounts.createUser({
+		adminId=Accounts.createUser({
 			'username': 'admin',
 			'email': 'admin@test.com',
 			'emails': ['admin@test.com'],
@@ -41,6 +43,8 @@ Meteor.startup(function() {
 				'password': 'password'
 			};
 			var tempID = Accounts.createUser(profileOptions);
+			Meteor.users.update({username:"admin"},{$push:{"colleagues":tempID}});
+			Meteor.users.update({_id: tempID},{$push:{"colleagues":adminId}});
 		}
 	}	
 });

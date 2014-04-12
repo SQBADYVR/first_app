@@ -1,8 +1,9 @@
 Router.map(function() {
 	this.route('home', {
 		path: '/',
-		template: 'main',
-		layoutTemplate: 'layout'
+		onBeforeAction: function() {
+			Router.go('/manageAccount');
+		}
 		});
 
 	this.route('manageAccount',{
