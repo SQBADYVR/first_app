@@ -1,4 +1,4 @@
-Projects=new Meteor.Collection('projects')
+projectSubscription=Meteor.subscribe('myProjects');
 
 Template.manageProject.helpers ({
 	projectMembers: function() {
@@ -55,7 +55,7 @@ Template.manageProject.helpers ({
 		var currProject=Session.get("currentProject");
 		console.log ("In isAdmin with currProject ");
 		console.log(currProject);
-		if ((currProject === null) || (currProject === undefined))
+		if (!(currProject))
 		{
 			return "";
 		}
@@ -71,11 +71,15 @@ Template.manageProject.helpers ({
 				return "Admin";
 		}
 	},
+	isProjectLoaded: function () {
+		return (projectSubscription.ready());
+	},
 	enterManageProject: function() {
+		console.log("manage projects");
 		//assumes called with the session variable currentProject set to the current project id.  
 		//if set to null, create a new project.
 		var currProject = Session.get("currentProject");
-		if ((currProject === null) || (currProject === undefined))
+		if (!(currProject === null))
 				{
 				newProject=Projects.insert(
 					{

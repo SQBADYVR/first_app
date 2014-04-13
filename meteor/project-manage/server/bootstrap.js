@@ -1,5 +1,11 @@
 Projects = new Meteor.Collection('projects');
 
+Meteor.publish('myProjects' ,function() {
+		var myID=this.userId();
+		console.log("MyID:  "+myID);
+		Projects.find({projectMembers: myID});  // narrow this down later
+
+
 makeid = function() {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -35,4 +41,7 @@ Meteor.startup(function() {
 			Accounts.createUser(profileOptions);
 		}
 	}
+
+	
+})
 });
