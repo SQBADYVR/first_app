@@ -1,8 +1,7 @@
-// create function to parse user domain name
-
 var myTeam=Meteor.subscribe('colleagues');
 var myInvites=Meteor.subscribe('invited');
 var mySelf=Meteor.subscribe('self');
+
 
 var toggleAutoAccept=function() {
 	if (Accounts.loginServicesConfigured()) {
@@ -15,6 +14,32 @@ var toggleAutoAccept=function() {
 		}
 	return null;
 }
+
+var matchMyDomain=function(doc, index, cursor) {
+	if (doc.emails.length > 0)
+	{
+		var theirEmail= doc.emails[0].address;
+  	 	var theirDomain=theirEmail.substr(theirEmail.indexOf('@')+1);
+  	 	var domainName=Meteor.user().emails[0].address;
+		var myDomain=domainName.substr(domainName.indexOf('@')+1);
+		if (myDomain == theirDomain)
+		{
+			Meteor.users.update({_id: doc._id}, {$push: {colleagues: Meteor.userId()}});
+			Meteor.users.update({_id: doc._id}, {$pull: {invitations: String(Meteor.userId())}});
+			Meteor.users.update({_id: Meteor.userId()}, {$push: {colleagues: doc._id }});
+
+		}
+	}
+}
+
+var handler=Meteor.setInterval(function() {
+	if (Accounts.loginServicesConfigured()) {
+		if (Meteor.user().includeDomain)  // if autoaccepting same domain name invites
+		{
+			var invitedMe=Meteor.users.find({invitations: {$in: [Meteor.userId()]}}).fetch();  // fix for username or email
+			invitedMe.forEach(matchMyDomain);
+	}
+}},5000);
 
 var removeColleague=function(oldColleague) {
 	var me=Meteor.user();
@@ -29,8 +54,26 @@ var removeInvitation=function(oldInvitee) {
 	var me=Meteor.user();
 	if (oldInvitee && me && me.invitations)
 	{
-		console.log ("ready to remove");
 		Meteor.users.update({_id: Meteor.userId()}, {$pull: {invitations: String(oldInvitee)}});
+	}
+}
+
+var acceptInvite=function(invitor) {
+	var me=Meteor.user();
+	if (invitor && me)
+	{
+		Meteor.users.update({_id: invitor._id}, {$push: {colleagues: Meteor.userId()}});
+		Meteor.users.update({_id: invitor._id}, {$pull: {invitations: String(Meteor.userId())}});
+		Meteor.users.update({_id: Meteor.userId()}, {$push: {colleagues: invitor._id}});
+	}
+}
+
+var rejectInvite=function(invitor) {
+	var me=Meteor.user();
+	if (invitor && me)
+	{
+		console.log ("ready to reject");
+		Meteor.users.update({_id: invitor._id}, {$pull: {invitations: String(Meteor.userId())}});
 	}
 }
 
@@ -147,9 +190,16 @@ Template.manageAccount.events ({
   },
 
   'click .btn-rescind-invitation': function () {
-  	console.log("Rescinding invitation");
   	removeInvitation(this);
-  }
+  },
 
+  'click .btn-accept-invite': function () {
+  	acceptInvite(this);
+  },
+
+  'click .btn-reject-invite': function () {
+  	console.log("Rejecting Invite");
+  	rejectInvite(this);
+  }
 
 })

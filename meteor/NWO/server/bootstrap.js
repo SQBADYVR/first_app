@@ -62,7 +62,7 @@ Meteor.publish('self', function () {
 
 Meteor.publish('invited', function() {
 	if (this.userId) {
-		return Meteor.users.find({invitations: {$all: [this.userId]}},{fields: {'_id':true, 'username':true, 'email':true, 'emails':true}})
+		return Meteor.users.find({invitations: {$all: [this.userId]}},{fields: {'_id':true, 'username':true, 'email':true, 'emails':true, 'invitations': true}})
 	}
 	else this.ready();
 });
@@ -80,6 +80,16 @@ Meteor.users.allow({
     if ((doc._id ===userId) && (fields.indexOf("invitations") > -1) && (fields.length === 1))
     	if ((modifier.$push) || (modifier.$pull))
     		return true;
+    if ((fields.indexOf("invitations") > -1) && (fields.length === 1))  //if we're dealing with invitations
+    	if ((doc.invitations) && (doc.invitations.indexOf(userId) > -1))  // and the person has invited me.  == may need to
+    																		// update for username and email rather than _id
+    		if ((modifier.$pull) && (modifier.$pull.invitations === userId))  // we're removing my name from invitations
+    			return true;
+    if ((fields.indexOf("colleagues") > -1) && (fields.length === 1))  //if we're dealing with a user who has invited me to be a colleague
+    	if ((doc.invitations) && (doc.invitations.indexOf(userId) > -1))  // and the person has invited me.  == may need to
+    																		// update for username and email rather than _id
+    		if ((modifier.$push) && (modifier.$push.colleagues === userId))  // we're adding me to colleagues.
+    			return true;
     return false;
   },
   remove: function (userId, doc) {
