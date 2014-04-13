@@ -99,3 +99,55 @@ Meteor.users.allow({
   },
  //fetch: ['owner']
 });
+
+// In your server code: define a method that the client can call
+Meteor.methods({
+  sendEmail: function (to, from, subject, text) {
+    check([to, from, subject, text], [String]);
+
+    // Let other method calls from the same client start running,
+    // without waiting for the email sending to complete.
+    this.unblock();
+    console.log("in sendEmail with "+to+' '+from+' '+subject+' '+text);
+    Email.send({
+      to: to,
+      from: from,
+      subject: subject,
+      text: text
+    });
+  },
+  inviteNewUser: function (invitor, invitee) {
+  	console.log(invitor);
+  	console.log(invitee);
+  	if (invitee)
+  	{
+  	var checkEmail=invitee.indexOf('@');
+  	console.log(checkEmail);
+  	if (checkEmail>=0)
+  		{
+  		//it's an email address
+  		var ExistingUser=Meteor.users.findOne({emails: {address: invitee}});
+  		console.log(ExistingUser);
+  		if (!ExistingUser) // if not a user in the database
+  			{
+  			var me=Meteor.users.findOne(invitor);
+  			console.log(me);
+  			var invitorEmail=me.emails[0].address;
+  			console.log(invitorEmail);
+  			//send an invite to join cloudDesign
+  			subjectString="Your colleague, "+invitorEmail+" would like you to join his team on designCloud."
+  			console.log(subjectString);
+  			textString="designCloud is a revolutionary suite of tools for teams to manage product design information in the cloud.\n\n";
+  			textString=textString + "Your colleague at "+invitorEmail+" is using it and wants you to join the team.\n\n.";
+  			textString=textString + "Click the link below to sign up for free.\n\n";
+  			console.log(textString);
+  			Meteor.call('sendEmail', invitee, invitorEmail, subjectString, textString);
+  			}
+  		}
+  	else
+  		//it's a user name
+  	{
+  		return;
+  	}
+  }
+}});

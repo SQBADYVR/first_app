@@ -13,10 +13,18 @@
 			<span><input id="autoAcceptInvite" type="checkbox" {{autoAcceptInvite}}>  Automatically accept invitations from emails with your same domain name ({{myDomainName}})</span>
 			</li>
 			</ul>
+			<div class="page-header"><h4>Invite someone to become a teammate</h4></div>
+			<form class="form-inline" role="form">
+  				<div class="form-group">
+   					<label class="sr-only" for="newInvitation">Invite someone to become a teammate:</label>
+    				<input type="text" class="form-control" id="newInvitation" placeholder="Enter username or email">
+    				<span class="help-block">For security reasons, you will not see any information about other users until you become teammates.  Please check email carefully before submitting.</span>
+				</div>
+			</form>
 		</div>
 		
 		<div class="col-sm-4">
-			<div class="page-header"><h4>Invitations Received</h4></div>
+			<div class="page-header"><h4>Invitations I Have Received</h4></div>
 			<ul class="list-group">
 				{{#each invitedUser}}
 					<li class="list-group-item">
@@ -31,13 +39,13 @@
 					</li>
 				{{/each}}
 			</ul>
-			<div class="page-header"><h4>Invitations Sent</h4></div>
+			<div class="page-header"><h4>Invitations I Have Sent</h4></div>
 			<ul class="list-group">
 				{{#each usersIveInvited}}
 					<li class="list-group-item">
 						<div class="invitee">
 							<div class="btn-group">
-								<button type="button" class="btn btn-default btn-rescind-invitation">Rescind Invitation</button>
+								<button type="button" class="btn btn-default btn-rescind-invitation">Cancel Invitation</button>
 							</div>
 						{{listInvited}}	 	
 						</div>
@@ -46,7 +54,7 @@
 			</ul>
 		</div>
 		<div class="col-sm-4">
-			<div class="page-header"><h4>Colleagues</h4></div>
+			<div class="page-header"><h4>My Teammates</h4></div>
 			<ul class="list-group">
 				{{#each colleague}}
 					<li class="list-group-item">

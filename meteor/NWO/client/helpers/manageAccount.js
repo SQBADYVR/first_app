@@ -2,6 +2,28 @@ var myTeam=Meteor.subscribe('colleagues');
 var myInvites=Meteor.subscribe('invited');
 var mySelf=Meteor.subscribe('self');
 
+var okCancelEvents = function (selector, callbacks) {
+  var ok = callbacks.ok || function () {};
+  var cancel = callbacks.cancel || function () {};
+  var events = {};
+  events['keyup '+selector+', keydown '+selector+', focusout '+selector] =
+    function (evt) {
+      if (evt.type === "keydown" && evt.which === 27) {
+        // escape = cancel
+        cancel.call(this, evt);
+
+      } else if (evt.type === "keyup" && evt.which === 13 ||
+                 evt.type === "focusout") {
+        // blur/return/enter = ok/submit if non-empty
+        var value = String(evt.target.value || "");
+        if (value)
+          ok.call(this, value, evt);
+        else
+          cancel.call(this, evt);
+      }
+    };
+  return events;
+};
 
 var toggleAutoAccept=function() {
 	if (Accounts.loginServicesConfigured()) {
@@ -48,7 +70,8 @@ var removeColleague=function(oldColleague) {
 		Meteor.users.update({_id: String(oldColleague)}, {$pull: {colleagues: Meteor.userId()}});
 		Meteor.users.update({_id: Meteor.userId()}, {$pull: {colleagues: String(oldColleague)}});
 	}
-}
+	return;
+};
 
 var removeInvitation=function(oldInvitee) {
 	var me=Meteor.user();
@@ -56,7 +79,8 @@ var removeInvitation=function(oldInvitee) {
 	{
 		Meteor.users.update({_id: Meteor.userId()}, {$pull: {invitations: String(oldInvitee)}});
 	}
-}
+	return;
+};
 
 var acceptInvite=function(invitor) {
 	var me=Meteor.user();
@@ -66,7 +90,8 @@ var acceptInvite=function(invitor) {
 		Meteor.users.update({_id: invitor._id}, {$pull: {invitations: String(Meteor.userId())}});
 		Meteor.users.update({_id: Meteor.userId()}, {$push: {colleagues: invitor._id}});
 	}
-}
+	return;
+};
 
 var rejectInvite=function(invitor) {
 	var me=Meteor.user();
@@ -75,7 +100,8 @@ var rejectInvite=function(invitor) {
 		console.log ("ready to reject");
 		Meteor.users.update({_id: invitor._id}, {$pull: {invitations: String(Meteor.userId())}});
 	}
-}
+	return;
+};
 
 Template.manageAccount.helpers ({
 	name: function() {
@@ -198,8 +224,26 @@ Template.manageAccount.events ({
   },
 
   'click .btn-reject-invite': function () {
-  	console.log("Rejecting Invite");
   	rejectInvite(this);
   }
 
-})
+});
+
+Template.manageAccount.events(okCancelEvents(
+  '#newInvitation',
+  {
+    ok: function (text, evt) {	
+      if ((text) && Accounts.loginServicesConfigured())
+      {
+      	Meteor.users.update({_id: Meteor.userId()},{$push: {invitations: text}});
+      	// need to write function to generate email for non-registered user.
+      	// calling server method inviteNewUser(text) to check for existence of the user and invitation if they 
+      	// don't exist.
+      	Meteor.call('inviteNewUser', Meteor.userId(), text);
+      }
+      evt.target.value='';
+    },
+    cancel: function () {
+      ;
+    }
+  }));
