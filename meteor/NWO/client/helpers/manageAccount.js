@@ -16,6 +16,24 @@ var toggleAutoAccept=function() {
 	return null;
 }
 
+var removeColleague=function(oldColleague) {
+	var me=Meteor.user();
+	if (oldColleague && me && me.colleagues)
+	{
+		Meteor.users.update({_id: String(oldColleague)}, {$pull: {colleagues: Meteor.userId()}});
+		Meteor.users.update({_id: Meteor.userId()}, {$pull: {colleagues: String(oldColleague)}});
+	}
+}
+
+var removeInvitation=function(oldInvitee) {
+	var me=Meteor.user();
+	if (oldInvitee && me && me.invitations)
+	{
+		console.log ("ready to remove");
+		Meteor.users.update({_id: Meteor.userId()}, {$pull: {invitations: String(oldInvitee)}});
+	}
+}
+
 Template.manageAccount.helpers ({
 	name: function() {
 		if (Accounts.loginServicesConfigured()) {
@@ -125,7 +143,12 @@ Template.manageAccount.events ({
   },
 
   'click .btn-remove-colleague' : function () {
-  	console.log("Clickedit");
+  	removeColleague(this);
+  },
+
+  'click .btn-rescind-invitation': function () {
+  	console.log("Rescinding invitation");
+  	removeInvitation(this);
   }
 
 

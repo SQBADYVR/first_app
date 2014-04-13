@@ -69,14 +69,18 @@ Meteor.publish('invited', function() {
 
 Meteor.users.allow({
   update: function (userId, doc, fields, modifier) {
-  	console.log(userId);
-  	console.log(doc);
-  	console.log(fields);
-  	console.log(modifier);
-    if ((doc._id ===userId) && (fields.indexOf("includeDomain") > -1))
+  	if ((doc._id ===userId) && (fields.indexOf("includeDomain") > -1) && (fields.length === 1))
     	return true;
-    else
-    	return false;
+    if ((doc._id ===userId) && (fields.indexOf("colleagues") > -1) && (fields.length === 1))
+    	if ((modifier.$push) || (modifier.$pull))
+    		return true;
+    if ((fields.indexOf("colleagues") > -1) && (fields.length === 1))
+    	if (((modifier.$push) && (modifier.$push.colleagues === userId)) || ((modifier.$pull) && (modifier.$pull.colleagues === userId)))
+    		return true;
+    if ((doc._id ===userId) && (fields.indexOf("invitations") > -1) && (fields.length === 1))
+    	if ((modifier.$push) || (modifier.$pull))
+    		return true;
+    return false;
   },
   remove: function (userId, doc) {
     // can only remove your own documents
