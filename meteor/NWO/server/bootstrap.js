@@ -62,7 +62,11 @@ Meteor.publish('self', function () {
 
 Meteor.publish('invited', function() {
 	if (this.userId) {
-		return Meteor.users.find({invitations: {$all: [this.userId]}},{fields: {'_id':true, 'username':true, 'email':true, 'emails':true, 'invitations': true}})
+		var myID=Meteor.users.findOne(this.userId);
+		if (myID){
+		console.log(myID);
+		return Meteor.users.find({invitations: {$in: [myID.username, myID.emails[0].address]}},{fields: {'_id':true, 'username':true, 'email':true, 'emails':true, 'invitations': true}})
+		}	
 	}
 	else this.ready();
 });
@@ -81,10 +85,28 @@ Meteor.users.allow({
     	if ((modifier.$push) || (modifier.$pull))
     		return true;
     if ((fields.indexOf("invitations") > -1) && (fields.length === 1))  //if we're dealing with invitations
-    	if ((doc.invitations) && (doc.invitations.indexOf(userId) > -1))  // and the person has invited me.  == may need to
+    	{
+    	var myRecord=Meteor.users.findOne(userId);
+    	console.log(myRecord);
+    	if ((doc.invitations) && (doc.invitations.indexOf(myRecord.username) > -1))  // and the person has invited me.  == may need to
     																		// update for username and email rather than _id
-    		if ((modifier.$pull) && (modifier.$pull.invitations === userId))  // we're removing my name from invitations
+    	{
+    		if ((modifier.$pull) && (modifier.$pull.invitations === myRecord.username))  // we're removing my name from invitations
+    		{
     			return true;
+    		}
+    		else return false;
+    	}
+    	else if (myRecord.emails.length>0)
+    		if (myRecord.emails[0].address)
+    		{
+    			if ((doc.invitations) && (doc.invitations.indexOf(myRecord.emails[0].address) > -1)) 
+    				if ((modifier.$pull) && (modifier.$pull.invitations === myRecord.emails[0].address))
+    					return true;
+
+    		}
+
+    }
     if ((fields.indexOf("colleagues") > -1) && (fields.length === 1))  //if we're dealing with a user who has invited me to be a colleague
     	if ((doc.invitations) && (doc.invitations.indexOf(userId) > -1))  // and the person has invited me.  == may need to
     																		// update for username and email rather than _id
@@ -135,7 +157,7 @@ Meteor.methods({
   			var invitorEmail=me.emails[0].address;
   			console.log(invitorEmail);
   			//send an invite to join cloudDesign
-  			subjectString="Your colleague, "+invitorEmail+" would like you to join his team on designCloud."
+  			subjectString="Your colleague, "+invitorEmail+", would like you to join his team on designCloud."
   			console.log(subjectString);
   			textString="designCloud is a revolutionary suite of tools for teams to manage product design information in the cloud.\n\n";
   			textString=textString + "Your colleague at "+invitorEmail+" is using it and wants you to join the team.\n\n.";

@@ -46,8 +46,11 @@ var matchMyDomain=function(doc, index, cursor) {
 		var myDomain=domainName.substr(domainName.indexOf('@')+1);
 		if (myDomain == theirDomain)
 		{
+			var me=Meteor.user();
 			Meteor.users.update({_id: doc._id}, {$push: {colleagues: Meteor.userId()}});
-			Meteor.users.update({_id: doc._id}, {$pull: {invitations: String(Meteor.userId())}});
+			Meteor.users.update({_id: doc._id}, {$pull: {invitations: String(me.username)}});
+			if (me.emails.length>0)
+			Meteor.users.update({_id: doc._id}, {$pull: {invitations: String(me.emails[0].address)}});
 			Meteor.users.update({_id: Meteor.userId()}, {$push: {colleagues: doc._id }});
 
 		}
@@ -57,8 +60,8 @@ var matchMyDomain=function(doc, index, cursor) {
 var handler=Meteor.setInterval(function() {
 	if (Accounts.loginServicesConfigured()) {
 		if (Meteor.user().includeDomain)  // if autoaccepting same domain name invites
-		{
-			var invitedMe=Meteor.users.find({invitations: {$in: [Meteor.userId()]}}).fetch();  // fix for username or email
+		{	var me=Meteor.user();
+			var invitedMe=Meteor.users.find({invitations: {$in: [me.username, me.emails[0].address]}}).fetch();  // fix for username or email
 			invitedMe.forEach(matchMyDomain);
 	}
 }},5000);
@@ -87,7 +90,9 @@ var acceptInvite=function(invitor) {
 	if (invitor && me)
 	{
 		Meteor.users.update({_id: invitor._id}, {$push: {colleagues: Meteor.userId()}});
-		Meteor.users.update({_id: invitor._id}, {$pull: {invitations: String(Meteor.userId())}});
+		Meteor.users.update({_id: invitor._id}, {$pull: {invitations: String(me.username)}});
+		if (me.emails.length>0)
+			Meteor.users.update({_id: invitor._id}, {$pull: {invitations: String(me.emails[0].address)}});
 		Meteor.users.update({_id: Meteor.userId()}, {$push: {colleagues: invitor._id}});
 	}
 	return;
@@ -98,7 +103,9 @@ var rejectInvite=function(invitor) {
 	if (invitor && me)
 	{
 		console.log ("ready to reject");
-		Meteor.users.update({_id: invitor._id}, {$pull: {invitations: String(Meteor.userId())}});
+		Meteor.users.update({_id: invitor._id}, {$pull: {invitations: String(me.username)}});
+		if (me.emails.length>0)
+			Meteor.users.update({_id: invitor._id}, {$pull: {invitations: String(me.emails[0].address)}});
 	}
 	return;
 };
@@ -144,9 +151,9 @@ Template.manageAccount.helpers ({
 	},
 	invitedUser: function () {
 		if (Accounts.loginServicesConfigured()) {
-			var myID=Meteor.userId();
+			var myID=Meteor.users.findOne(Meteor.userId());
 			if (myID) {
-				var retval= Meteor.users.find({invitations: {$in: [String(myID)]}}).fetch();  //fix to reflect username or email rather than ID
+				var retval= Meteor.users.find({invitations: {$in: [String(myID.username), String(myID.emails[0].address)]}}).fetch();  //fix to reflect username or email rather than ID
 				return retval;
 			}
 		} else return null;
