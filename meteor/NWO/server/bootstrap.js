@@ -17,7 +17,7 @@ Meteor.startup(function() {
   		if (options.profile)
     		user.profile = options.profile;
     	user.colleagues=[];
-    	user.invitations=[];
+    	user.invitations=[];  // invitations I've sent
     	user.includeDomain=false;
   		return user;
 	});
@@ -51,13 +51,37 @@ Meteor.startup(function() {
 
 Meteor.publish('colleagues', function() {
 	if (this.userId) {
-		return Meteor.users.find({$or: [{_id: this.userId},{colleagues: {$all: [this.userId]}}]},{fields: {'username': true, 'email': true, 'emails': true, 'colleagues': true, 'invitations':true}})
+		return Meteor.users.find({$or: [{_id: this.userId},{colleagues: {$all: [this.userId]}}]},{fields: {'_id': true, 'username': true, 'email': true, 'emails': true, 'colleagues': true, 'invitations':true}})
 	} else this.ready();
 });
+
+Meteor.publish('self', function () {
+	if (this.userId)
+		return Meteor.users.find({_id: this.userId}, {fields: {'_id': true, 'username': true, 'email': true, 'emails': true, 'colleagues': true, 'includeDomain': true, 'invitations':true}})
+})
 
 Meteor.publish('invited', function() {
 	if (this.userId) {
 		return Meteor.users.find({invitations: {$all: [this.userId]}},{fields: {'_id':true, 'username':true, 'email':true, 'emails':true}})
 	}
 	else this.ready();
+});
+
+Meteor.users.allow({
+  update: function (userId, doc, fields, modifier) {
+  	console.log(userId);
+  	console.log(doc);
+  	console.log(fields);
+  	console.log(modifier);
+    if ((doc._id ===userId) && (fields.indexOf("includeDomain") > -1))
+    	return true;
+    else
+    	return false;
+  },
+  remove: function (userId, doc) {
+    // can only remove your own documents
+//    return doc.owner === userId;
+	return false;
+  },
+ //fetch: ['owner']
 });

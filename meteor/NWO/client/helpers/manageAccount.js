@@ -2,6 +2,7 @@
 
 var myTeam=Meteor.subscribe('colleagues');
 var myInvites=Meteor.subscribe('invited');
+var mySelf=Meteor.subscribe('self');
 
 var toggleAutoAccept=function() {
 	if (Accounts.loginServicesConfigured()) {
@@ -12,6 +13,7 @@ var toggleAutoAccept=function() {
 			else Meteor.users.update({_id: myID},{$set: {includeDomain: true}});
 				
 		}
+	return null;
 }
 
 Template.manageAccount.helpers ({
@@ -57,7 +59,8 @@ Template.manageAccount.helpers ({
 		if (Accounts.loginServicesConfigured()) {
 			var myID=Meteor.userId();
 			if (myID) {
-				return Meteor.users.find({invitations: {$in: [myID]}}).fetch();  
+				var retval= Meteor.users.find({invitations: {$in: [String(myID)]}}).fetch();  //fix to reflect username or email rather than ID
+				return retval;
 			}
 		} else return null;
 	},
@@ -69,8 +72,43 @@ Template.manageAccount.helpers ({
 			if (colleague.username)
 				return colleague.username;
 			else if (colleague.emails.count()>0)
-				return collegue.emails[0].address;
+				return colleague.emails[0].address;
 			}}
+		return null;
+	},
+	invitedMeNameOrEmail: function() {
+		var self=this;
+		if (self) {
+			if (self.username)
+				return self.username;
+			else if (self.emails.count()>0)
+				return self.emails[0].address;
+		}
+		return null;
+	},
+	usersIveInvited: function() {
+		if (Accounts.loginServicesConfigured()) {
+			var myID=Meteor.userId();
+			if (myID) {
+				var retval= Meteor.user().invitations;
+				return retval;
+			}
+		} 
+		return null;
+	},
+	listInvited: function() {
+		return this;
+	},
+	myDomainName: function() {
+		if (Accounts.loginServicesConfigured()) {
+			var myID=Meteor.userId();
+			if (myID)
+		 		 if (Meteor.user().emails.length>0) {
+			 	 var domainName=Meteor.user().emails[0].address;
+			 	 var retval=domainName.substr(domainName.indexOf('@')+1);
+			 	 return retval;
+			}
+		}
 		return null;
 	}
 });
@@ -83,6 +121,11 @@ var activateInput = function (input) {
 Template.manageAccount.events ({
  'click #autoAcceptInvite': function () {
     toggleAutoAccept();
+    //  add in function to clear invitees to colleagues if domain names match.
+  },
+
+  'click .btn-remove-colleague' : function () {
+  	console.log("Clickedit");
   }
 
 

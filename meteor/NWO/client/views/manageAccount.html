@@ -1,6 +1,6 @@
 <template name="manageAccount">
 	<div class="row-fluid">
-		<div class="col-sm-6">
+		<div class="col-sm-4">
 			<div class="page-header"><h3>Account settings</h3></div>
 			<ul class="list-group">
 			<li class="list-group-item">
@@ -10,11 +10,42 @@
 			email: {{email}}
 			</li>
 			<li class="list-group-item">
-			<span><input id="autoAcceptInvite" type="checkbox">  Automatically accept invitations from emails with your same domain name ({{domainName}})</span>
+			<span><input id="autoAcceptInvite" type="checkbox" {{autoAcceptInvite}}>  Automatically accept invitations from emails with your same domain name ({{myDomainName}})</span>
 			</li>
 			</ul>
 		</div>
-		<div class="col-sm-6">
+		
+		<div class="col-sm-4">
+			<div class="page-header"><h4>Invitations Received</h4></div>
+			<ul class="list-group">
+				{{#each invitedUser}}
+					<li class="list-group-item">
+						<div class="invitee">
+						{{invitedMeNameOrEmail}}
+							<div class="btn-group">
+							 	<button type="button" class="btn btn-default">Accept Invitation</button>
+								<button type="button" class="btn btn-default">Reject Invitation</button>
+							</div>
+							 	
+						</div>
+					</li>
+				{{/each}}
+			</ul>
+			<div class="page-header"><h4>Invitations Sent</h4></div>
+			<ul class="list-group">
+				{{#each usersIveInvited}}
+					<li class="list-group-item">
+						<div class="invitee">
+							<div class="btn-group">
+								<button type="button" class="btn btn-default">Rescind Invitation</button>
+							</div>
+						{{listInvited}}	 	
+						</div>
+					</li>
+				{{/each}}
+			</ul>
+		</div>
+		<div class="col-sm-4">
 			<div class="page-header"><h4>Colleagues</h4></div>
 			<ul class="list-group">
 				{{#each colleague}}
@@ -22,35 +53,8 @@
 						<div class="colleague">
 						{{nameOrEmail}}
 						<div class="btn-group btn-remove-colleague">
-							<button type="button" class="btn btn-danger ">Remove</button>
+							<button type="button" class="btn btn-default ">Remove</button>
 							</div> 
-						</div>
-					</li>
-				{{/each}}
-			</ul>
-			<div class="page-header"><h4>Invitations Received</h4></div>
-			<ul class="list-group">
-				{{#each invitedUser}}
-					<li class="list-group-item">
-						<div class="invitee">
-							<div class="btn-group">
-							 	<button type="button" class="btn btn-default">Accept Invitation</button>
-								<button type="button" class="btn btn-default">Reject Invitation</button>
-							</div>
-						{{nameOrEmail}}	 	
-						</div>
-					</li>
-				{{/each}}
-			</ul>
-			<div class="page-header"><h4>Invitations Sent</h4></div>
-			<ul class="list-group">
-				{{#each invitedUser}}
-					<li class="list-group-item">
-						<div class="invitee">
-							<div class="btn-group">
-								<button type="button" class="btn btn-default">Rescind Invitation</button>
-							</div>
-						{{nameOrEmail}}	 	
 						</div>
 					</li>
 				{{/each}}
