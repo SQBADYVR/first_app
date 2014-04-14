@@ -1,5 +1,4 @@
 Meteor.publish('teammates', function () {
-	console.log(this);
 	if (this.userId())
 		{return Meteor.users.find({_id: this.userId()},
 				{fields: {invited: 1, colleagues:1, blacklist:1, includeDomain: 1}})}

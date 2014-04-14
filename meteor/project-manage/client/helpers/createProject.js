@@ -1,11 +1,14 @@
+Projects=new Meteor.Collection('projects');
+
 projectSubscription=Meteor.subscribe('myProjects');
+
+
 
 Template.manageProject.helpers ({
 	projectMembers: function() {
 		return this.projectMembers;
 	},
 	projectMember: function() {
-		console.log(this);
 		return this;
 	},
 	isPublic: function() {
@@ -27,16 +30,10 @@ Template.manageProject.helpers ({
 	},
 	email: function () {
 		var temp=this;
-		console.log(temp);
-		try
-		{
-		var userDude=Meteor.users.findOne(temp);
-		console.log(userDude);
-		}
-		catch(err) {console.log("Crapped out with this: "+this+" error: "+err);console.log(userDude); }
+		var userDude=Meteor.users.findOne(String(temp));
+
 		if (userDude)
 		{
-			console.log("found it");
 			if (!userDude.username)
 			{
 				return userDude.emails[0].address;
@@ -45,16 +42,11 @@ Template.manageProject.helpers ({
 				return  userDude.username;
 			}
 		}
-		else{
-			console.log("No dice");
-		}
 		return null;
 	},
 	isAdmin: function() {
 		var self=this;
 		var currProject=Session.get("currentProject");
-		console.log ("In isAdmin with currProject ");
-		console.log(currProject);
 		if (!(currProject))
 		{
 			return "";
@@ -62,24 +54,84 @@ Template.manageProject.helpers ({
 		else
 		{
 			var currProjectObject=Projects.findOne(currProject);
-			console.log(currProjectObject);
-			console.log(currProjectObject.projectAdministrators);
-			console.log(self);
-			if (currProjectObject.projectAdministrators.indexOf(self) === -1) // is not an administrator
+			if (currProjectObject.projectAdministrators.indexOf(String(self)) === -1) // is not an administrator
 				return "";
 			else
 				return "Admin";
+		}
+	},	
+	canEdit: function() {
+		var self=this;
+		var currProject=Session.get("currentProject");
+		if (!(currProject))
+		{
+			return "";
+		}
+		else
+		{
+			var currProjectObject=Projects.findOne(currProject);
+			if (currProjectObject.projectEditors.indexOf(String(self)) === -1) // is not an administrator
+				return "";
+			else
+				return "Editor";
+		}
+	},	
+	canDownload: function() {
+		var self=this;
+		var currProject=Session.get("currentProject");
+		if (!(currProject))
+		{
+			return "";
+		}
+		else
+		{
+			var currProjectObject=Projects.findOne(currProject);
+			if (currProjectObject.projectDownload.indexOf(String(self)) === -1) // is not an administrator
+				return "";
+			else
+				return "canDownload";
+		}
+	},
+	canPrint: function() {
+		var self=this;
+		var currProject=Session.get("currentProject");
+		if (!(currProject))
+		{
+			return "";
+		}
+		else
+		{
+			var currProjectObject=Projects.findOne(currProject);
+			if (currProjectObject.projectPrint.indexOf(String(self)) === -1) // is not an administrator
+				return "";
+			else
+				return "canPrint";
+		}
+	},
+	canView: function() {
+		var self=this;
+		var currProject=Session.get("currentProject");
+		if (!(currProject))
+		{
+			return "";
+		}
+		else
+		{
+			var currProjectObject=Projects.findOne(currProject);
+			if (currProjectObject.projectView.indexOf(String(self)) === -1) // is not an administrator
+				return "";
+			else
+				return "canView";
 		}
 	},
 	isProjectLoaded: function () {
 		return (projectSubscription.ready());
 	},
 	enterManageProject: function() {
-		console.log("manage projects");
 		//assumes called with the session variable currentProject set to the current project id.  
 		//if set to null, create a new project.
 		var currProject = Session.get("currentProject");
-		if (!(currProject === null))
+		if (!(currProject))
 				{
 				newProject=Projects.insert(
 					{

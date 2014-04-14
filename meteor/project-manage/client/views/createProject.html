@@ -2,12 +2,19 @@
 {{#if isProjectLoaded}}
 	{{#with enterManageProject}}
 	<div class="permission-wrapper">
+  <div class="col-sm-6">
     <div class="edit">
-    	  <h3>Project Name</h3>
-          <input class="project-name-input" id="project-name-input" type="text" value="{{projectName}}" placeholder="{{projectName}}" size="100" />
+    	  <h4>Project Name</h4>
+            <form class="form-inline" role="form">
+          <div class="form-group">
+            <label class="sr-only" for="newInvitation">Invite someone to become a colleague:</label>
+            <input type="text" class="form-control project-name-input" id="project-name-input" value="{{projectName}}" placeholder="{{projectName}}">
+            <span class="help-block"></span>
+        </div>
+        </form>
     </div>
     <div class="projectType">
-    	<h3>Privacy Setting</h3>
+    	<h4>Privacy Setting</h4>
     	<div class="radio">
   			<label class="{{isPublic}}">
   			  	<input type="radio" name="optionsRadios" id="public" value="public" >
@@ -21,12 +28,16 @@
   			</label>
 		</div>
 	</div>
-	<h3>Project Members</h3>
+	<h4>Project Members</h4>
 	<div class="addProjectUsers">
 	  Enter name or email to invite users to your project, or enter group name to add group of users.
-		<div class="addUsers">
-          <input class="user-name-input" id="project-user-name-input" type="text" value="{{name}}" placeholder="User Name, User email, or Group Name" size="100"/>
-      	</div>
+    <form class="form-inline" role="form">
+          <div class="form-group addUsers">
+            <label class="sr-only" for="newInvitation">Invite someone to become a colleague:</label>
+            <input type="text" class="form-control user-name-input" id="project-user-name-input" placeholder="Enter username, email, or team name">
+            <span class="help-block">blahblahblah</span>
+        </div>
+        </form>
 	</div>
     <div class="user-permissions">
     <ul class="userNames">
@@ -48,6 +59,7 @@
        	</li>
     {{/each}}
     </ul>
+    </div>
     </div>
     </div>
     {{/with}}
