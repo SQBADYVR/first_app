@@ -16,6 +16,22 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div class="modal fade" id="needOneAdmin">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+       <h4 class="modal-title"><div class="alert alert-danger">Warning:  At least one administrator must be active.</div></h4>
+      </div>
+      <div class="modal-body">
+        <p>You must promote someone on the team to administrator before deleting yourself.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="warning" class="btn btn-primary" data-dismiss="modal">OK</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 {{#if isProjectLoaded}}
 	{{#with enterManageProject}}
 	<div class="permission-wrapper">
@@ -35,7 +51,7 @@
     	<div class="radio">
   			<label class="{{isPublic}}">
   			  	<input type="radio" name="optionsRadios" id="public" value="public" >
-  			  	<span class="glyphicon glyphicon-globe"></span> Public Project:  Anyone can view, print, or download.  You decide who can edit or administer the project data.
+  			  	<span class="glyphicon glyphicon-globe"></span> Public Project:  Anyone on designCloud can view, download, and print.  You decide who can administer and edit.
  			 </label>
 		</div>
 		<div class="radio">
@@ -56,7 +72,7 @@
             <div class="colleague">
             <div class="btn-group">            
             <button type="button" class="btn btn-link btn-xs">{{nameOrEmail}}</button>
-              <button type="button" class="btn btn-default btn-xs" title="Add to Project">
+              <button type="button" class="btn btn-default btn-xs btn-add-to-project" title="Add to Project">
                 <span class="glyphicon glyphicon-chevron-right"></span> 
               </button>
 
@@ -86,14 +102,15 @@
     		<div class="lineWrapper">
     		<div class="destroyUser"></div>
         	<div class="displayUser">
-            	 <div class="userNames"><button type="button" class="btn btn-link">{{email}}</button></div>
+            	 <div class="userNames"><button type="button" class="btn btn-link btn-xs">{{email}}</button></div>
         	</div>
  	        <div class="projectPermissions">
-    	    	<div class="admin"><button type="button" class="btn btn-add btn-sm {{isAdmin}} Admin"><span title="Administrator" class="glyphicon glyphicon-cog"> Admin</span></button></div>
-        		<div class="edit"><button type="button" class="btn btn-add btn-success btn-sm {{canEdit}}"><span title="Edit" class="glyphicon glyphicon-pencil"> Edit</span></button></div>
-        		<div class="download"><button type="button" class="btn btn-add btn-success btn-sm {{canDownload}}"><span title="Download" class="glyphicon glyphicon-download-alt"> Download</span></button></div>
-        		<div class="print"><button type="button" class="btn btn-add btn-success btn-sm {{canPrint}}"><span title="Print" class="glyphicon glyphicon-print"> Print</span></button></div>
-        		<div class="view"><button type="button" class="btn btn-add btn-success btn-sm {{canView}}"><span title="View" class="glyphicon glyphicon-eye-open"> View</span></button></div>
+    	    	<div class="admin"><button type="button" class="btn btn-add btn-xs {{isAdmin}} Admin"><span title="Administrator" class="glyphicon glyphicon-cog"> Admin</span></button></div>
+        		<div class="edit"><button type="button" class="btn btn-add  btn-xs {{canEdit}} Editor"><span title="Edit" class="glyphicon glyphicon-pencil"> Edit</span></button></div>
+        		<div class="download"><button type="button" class="btn btn-add  btn-xs {{canDownload}} Download"><span title="Download" class="glyphicon glyphicon-download-alt"> Download</span></button></div>
+        		<div class="print"><button type="button" class="btn btn-add btn-xs {{canPrint}} Print"><span title="Print" class="glyphicon glyphicon-print"> Print</span></button></div>
+        		<div class="view"><button type="button" class="btn btn-add btn-xs {{canView}} Viewer"><span title="View" class="glyphicon 
+            glyphicon-eye-open"> View</span></button></div>
        		</div>
        		</div>
        	</li>

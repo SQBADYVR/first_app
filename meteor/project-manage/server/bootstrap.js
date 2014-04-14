@@ -13,11 +13,11 @@ Projects.allow({
     console.log(doc);
     console.log(fields);
     console.log(modifier);
-    return (doc.projectEditors.indexOf(userId)>-1);
+    return (doc.projectAdministrators.indexOf(userId)>-1);
   },
   insert: function(userId, doc) {
     if (doc.projectEditors)
-    return (doc.projectEditors.indexOf(userId)>-1);
+    return (doc.projectAdministrators.indexOf(userId)>-1);
   }
 
 })

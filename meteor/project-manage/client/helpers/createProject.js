@@ -17,12 +17,98 @@ var toggleAdmin=function(myRecord) {
 				if (currProject.projectAdministrators.indexOf(Meteor.userId()) > -1)  //check that user had admin access
 					if (currProject.projectAdministrators.indexOf(myRecord) === -1)  // if the record is currently not an admin
 						Projects.update({_id:currentProject},{$push:{projectAdministrators: myRecord}});
-					else if (currProject.projectAdministrators.length>1)  // cannot deactivate only remaining admin
+					else 
+					{
+					if (currProject.projectAdministrators.length>1)  // cannot deactivate only remaining admin
 							{
 							if (myRecord === Meteor.userId())  // if I am deactivating my own admin access, confirm it
 								$('#checkAdminDelete').modal();
 							else Projects.update({_id:currentProject},{$pull:{projectAdministrators: myRecord}});
 							}
+					else $('#needOneAdmin').modal();
+					}
+				}			
+			}
+		}
+}
+
+var toggleEditor=function(myRecord) {
+	if (Accounts.loginServicesConfigured())
+		if (myRecord)  // if passed a good record and the user database is up to date
+		{
+		myRecord=String(myRecord);
+		var currentProject=Session.get("currentProject");
+		if (Meteor.userId() && currentProject)
+			{
+			var currProject=Projects.findOne(currentProject);
+			if (currProject)
+				{
+				if (currProject.projectAdministrators.indexOf(Meteor.userId()) > -1)  //check that user had admin access
+					if (currProject.projectEditors.indexOf(myRecord) === -1)  // if the record is currently not an editor
+						Projects.update({_id:currentProject},{$push:{projectEditors: myRecord}});
+					else Projects.update({_id:currentProject},{$pull:{projectEditors: myRecord}});
+				}			
+			}
+		}
+}
+
+var toggleDownload=function(myRecord) {
+	if (Accounts.loginServicesConfigured())
+		if (myRecord)  // if passed a good record and the user database is up to date
+		{
+		myRecord=String(myRecord);
+		var currentProject=Session.get("currentProject");
+		if (Meteor.userId() && currentProject)
+			{
+			var currProject=Projects.findOne(currentProject);
+			if (currProject)
+				{
+				if (currProject.projectAdministrators.indexOf(Meteor.userId()) > -1)  //check that user had admin access
+					if (currProject.projectDownload.indexOf(myRecord) === -1)  // if the record is currently not an editor
+						Projects.update({_id:currentProject},{$push:{projectDownload: myRecord}});
+					else Projects.update({_id:currentProject},{$pull:{projectDownload: myRecord}});
+				}			
+			}
+		}
+}
+
+var togglePrint=function(myRecord) {
+	if (Accounts.loginServicesConfigured())
+		if (myRecord)  // if passed a good record and the user database is up to date
+		{
+		myRecord=String(myRecord);
+		var currentProject=Session.get("currentProject");
+		if (Meteor.userId() && currentProject)
+			{
+			var currProject=Projects.findOne(currentProject);
+			if (currProject)
+				{
+				if (currProject.projectAdministrators.indexOf(Meteor.userId()) > -1)  //check that user had admin access
+					if (currProject.projectPrint.indexOf(myRecord) === -1)  // if the record is currently not an editor
+						Projects.update({_id:currentProject},{$push:{projectPrint: myRecord}});
+					else Projects.update({_id:currentProject},{$pull:{projectPrint: myRecord}});
+				}			
+			}
+		}
+}
+
+var toggleView=function(myRecord) {
+	if (Accounts.loginServicesConfigured())
+		if (myRecord)  // if passed a good record and the user database is up to date
+		{
+		myRecord=String(myRecord);
+		var currentProject=Session.get("currentProject");
+		if (Meteor.userId() && currentProject)
+			{
+			var currProject=Projects.findOne(currentProject);
+			if (currProject)
+				if (!(currProject.publicProject))
+				{
+				if (currProject.projectAdministrators.indexOf(Meteor.userId()) > -1)  //check that user had admin access
+					if (currProject.projectView.indexOf(myRecord) === -1)  // if the record is currently not an editor
+						Projects.update({_id:currentProject},{$push:{projectView: myRecord}});
+					else if (!(currProject.publicProject))
+						Projects.update({_id:currentProject},{$pull:{projectView: myRecord}});
 				}			
 			}
 		}
@@ -48,6 +134,9 @@ Template.manageProject.helpers ({
 			return "";
 		else
 			return "active";
+	},
+	isNotPublic2: function() {
+		return (!(this.publicProject));
 	},
 	debug: function() {
 		return true;
@@ -89,15 +178,15 @@ Template.manageProject.helpers ({
 		var currProject=Session.get("currentProject");
 		if (!(currProject))
 		{
-			return "disabled";
+			return "btn-default";
 		}
 		else
 		{
 			var currProjectObject=Projects.findOne(currProject);
 			if (currProjectObject.projectEditors.indexOf(String(self)) === -1) 
-				return "disabled";
+				return "btn-default";
 			else
-				return "Editor";
+				return "btn-success";
 		}
 	},	
 	canDownload: function() {
@@ -105,15 +194,22 @@ Template.manageProject.helpers ({
 		var currProject=Session.get("currentProject");
 		if (!(currProject))
 		{
-			return "disabled";
+			return "btn-default";
 		}
-		else
+		else 
 		{
 			var currProjectObject=Projects.findOne(currProject);
-			if (currProjectObject.projectDownload.indexOf(String(self)) === -1) 
-				return "disabled";
-			else
-				return "canDownload";
+			if (currProjectObject.publicProject){
+				if (currProjectObject.projectDownload.indexOf(String(self)) === -1) 
+					Projects.update({_id:currProject},{$push:{projectDownload: String(self)}});
+				return "btn-success disabled";
+			}
+			else {
+				if (currProjectObject.projectDownload.indexOf(String(self)) === -1) 
+					return "btn-default";
+				else
+					return "btn-success";
+			}
 		}
 	},
 	canPrint: function() {
@@ -121,15 +217,22 @@ Template.manageProject.helpers ({
 		var currProject=Session.get("currentProject");
 		if (!(currProject))
 		{
-			return "disabled";
+			return "btn-default";
 		}
 		else
 		{
 			var currProjectObject=Projects.findOne(currProject);
-			if (currProjectObject.projectPrint.indexOf(String(self)) === -1) 
-				return "disabled";
-			else
-				return "canPrint";
+			if (currProjectObject.publicProject){
+				if (currProjectObject.projectPrint.indexOf(String(self)) === -1) 
+					Projects.update({_id:currProject},{$push:{projectPrint: String(self)}});
+				return "btn-success disabled";
+			}
+			else {
+				if (currProjectObject.projectPrint.indexOf(String(self)) === -1) 
+					return "btn-default";
+				else
+					return "btn-success";
+			}
 		}
 	},
 	canView: function() {
@@ -137,15 +240,22 @@ Template.manageProject.helpers ({
 		var currProject=Session.get("currentProject");
 		if (!(currProject))
 		{
-			return "disabled";
+			return "btn-default";
 		}
 		else
 		{
 			var currProjectObject=Projects.findOne(currProject);
-			if (currProjectObject.projectView.indexOf(String(self)) === -1) 
-				return "disabled";
-			else
-				return "canView";
+			if (currProjectObject.publicProject){
+				if (currProjectObject.projectView.indexOf(String(self)) === -1) 
+					Projects.update({_id:currProject},{$push:{projectView: String(self)}});
+				return "btn-success disabled";
+			}
+			else {
+				if (currProjectObject.projectView.indexOf(String(self)) === -1) 
+					return "btn-default";
+				else
+					return "btn-success";
+			}
 		}
 	},
 	isProjectLoaded: function () {
@@ -155,8 +265,8 @@ Template.manageProject.helpers ({
 		if (Accounts.loginServicesConfigured()) {
 			var myID=Meteor.userId();
 			if (myID) {
-				var retval=Meteor.user().colleagues;	//update to remove those already in the project!
-
+				var colleagues=Meteor.user().colleagues;	//update to remove those already in the project!
+				var retval=_.difference(colleagues, Projects.findOne(Session.get('currentProject')).projectMembers);
 				return retval;
 			}
 		} else return null;
@@ -250,8 +360,33 @@ Template.manageProject.events ({
   	return toggleAdmin(this);
   },
 
+  'click .Editor': function() {
+  	return toggleEditor(this);
+  }, 
+
+  'click .Download': function() {
+  	return toggleDownload(this);
+  },
+
+  'click .Print': function() {
+  	return togglePrint(this);
+  },
+
+ 'click .Viewer': function() {
+  	return toggleView(this);
+  },
   'click #confirmDelete': function() {
   		Projects.update({_id:Session.get("currentProject")},{$pull:{projectAdministrators: Meteor.userId()}});
-  }
+  },
 
+  'click .btn-add-to-project': function() {
+  		if (this)
+  		{
+  			var self=String(this);
+  			if (self === "")	
+  				return;
+  			else Projects.update({_id:Session.get("currentProject")},{$push:{projectMembers: self}});
+  		}
+  }
 })
+
