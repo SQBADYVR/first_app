@@ -40,3 +40,8 @@ span.glyphicon {
 	vertical-align: middle;
 	display: inline;
 }
+
+.myColleagues {
+	height: 150px;
+	overflow: auto;
+}

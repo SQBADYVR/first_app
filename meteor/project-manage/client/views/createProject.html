@@ -1,13 +1,30 @@
 <template name="manageProject">
+  <div class="modal fade" id="checkAdminDelete">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+       <h4 class="modal-title"><div class="alert alert-danger">Warning:  You are deleting your own administrator access!</div></h4>
+      </div>
+      <div class="modal-body">
+        <p>You have chosen to delete your own administrator access.  Please confirm, as you will not be able to restore it without the actions of another administrator.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" id="cancelDelete" data-dismiss="modal">Cancel This Action</button>
+        <button type="button" id="confirmDelete" class="btn btn-primary" data-dismiss="modal">Confirm This Action</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 {{#if isProjectLoaded}}
 	{{#with enterManageProject}}
 	<div class="permission-wrapper">
-  <div class="col-sm-6">
+  <div class="col-sm-4">
     <div class="edit">
     	  <h4>Project Name</h4>
             <form class="form-inline" role="form">
           <div class="form-group">
-            <label class="sr-only" for="newInvitation">Invite someone to become a colleague:</label>
+            <label class="sr-only" for="newProject">Name (or rename) the project</label>
             <input type="text" class="form-control project-name-input" id="project-name-input" value="{{projectName}}" placeholder="{{projectName}}">
             <span class="help-block"></span>
         </div>
@@ -28,14 +45,37 @@
   			</label>
 		</div>
 	</div>
+  <div class="myTeams">
+    <h4>My Teams</h4>
+  </div>
+  <h4>My Colleagues</h4>
+  <div class="myColleagues">
+    <ul class="list-group">
+        {{#each colleague}}
+          <li class="list-group-item">
+            <div class="colleague">
+            <div class="btn-group">            
+            <button type="button" class="btn btn-link btn-xs">{{nameOrEmail}}</button>
+              <button type="button" class="btn btn-default btn-xs" title="Add to Project">
+                <span class="glyphicon glyphicon-chevron-right"></span> 
+              </button>
+
+              </div> 
+            </div>
+          </li>
+        {{/each}}
+      </ul>
+  </div>
+  </div>
+  <div class="col-sm-8">
 	<h4>Project Members</h4>
 	<div class="addProjectUsers">
 	  Enter name or email to invite users to your project, or enter group name to add group of users.
     <form class="form-inline" role="form">
           <div class="form-group addUsers">
-            <label class="sr-only" for="newInvitation">Invite someone to become a colleague:</label>
+            <label class="sr-only" for="newInvitation">Invite someone to join the project:</label>
             <input type="text" class="form-control user-name-input" id="project-user-name-input" placeholder="Enter username, email, or team name">
-            <span class="help-block">blahblahblah</span>
+            <span class="help-block">Inviting someone to the project automatically invites them to join your list of colleagues.</span>
         </div>
         </form>
 	</div>
@@ -46,14 +86,14 @@
     		<div class="lineWrapper">
     		<div class="destroyUser"></div>
         	<div class="displayUser">
-            	 <div class="userNames">{{email}}</div>
+            	 <div class="userNames"><button type="button" class="btn btn-link">{{email}}</button></div>
         	</div>
  	        <div class="projectPermissions">
-    	    	<div class="admin"><button type="button" class="btn btn-add btn-success btn-sm {{isAdmin}}"><span title="Administrator" class="glyphicon glyphicon-cog"> Admin</span></button></div>
-        		<div class="edit"><button type="button" class="btn btn-add btn-success btn-sm"><span title="Edit" class="glyphicon glyphicon-pencil {{canEdit}}"> Edit</span></button></div>
-        		<div class="download"><button type="button" class="btn btn-add btn-success btn-sm"><span title="Download" class="glyphicon glyphicon-download-alt {{canDownload}}"> Download</span></button></div>
-        		<div class="print"><button type="button" class="btn btn-add btn-success btn-sm"><span title="Print" class="glyphicon glyphicon-print {{canPrint}}"> Print</span></button></div>
-        		<div class="view"><button type="button" class="btn btn-add btn-success btn-sm"><span title="View" class="glyphicon glyphicon-eye-open {{canView}}"> View</span></button></div>
+    	    	<div class="admin"><button type="button" class="btn btn-add btn-sm {{isAdmin}} Admin"><span title="Administrator" class="glyphicon glyphicon-cog"> Admin</span></button></div>
+        		<div class="edit"><button type="button" class="btn btn-add btn-success btn-sm {{canEdit}}"><span title="Edit" class="glyphicon glyphicon-pencil"> Edit</span></button></div>
+        		<div class="download"><button type="button" class="btn btn-add btn-success btn-sm {{canDownload}}"><span title="Download" class="glyphicon glyphicon-download-alt"> Download</span></button></div>
+        		<div class="print"><button type="button" class="btn btn-add btn-success btn-sm {{canPrint}}"><span title="Print" class="glyphicon glyphicon-print"> Print</span></button></div>
+        		<div class="view"><button type="button" class="btn btn-add btn-success btn-sm {{canView}}"><span title="View" class="glyphicon glyphicon-eye-open"> View</span></button></div>
        		</div>
        		</div>
        	</li>
@@ -66,4 +106,7 @@
   {{else}}
     <h3>Loading...</h3>
   {{/if}}
+
+
+
 </template>

@@ -1,8 +1,32 @@
 Projects=new Meteor.Collection('projects');
 
-projectSubscription=Meteor.subscribe('myProjects');
+var projectSubscription=Meteor.subscribe('myProjects');
+var myTeam=Meteor.subscribe('colleagues');
 
-
+var toggleAdmin=function(myRecord) {
+	if (Accounts.loginServicesConfigured())
+		if (myRecord)  // if passed a good record and the user database is up to date
+		{
+		myRecord=String(myRecord);
+		var currentProject=Session.get("currentProject");
+		if (Meteor.userId() && currentProject)
+			{
+			var currProject=Projects.findOne(currentProject);
+			if (currProject)
+				{
+				if (currProject.projectAdministrators.indexOf(Meteor.userId()) > -1)  //check that user had admin access
+					if (currProject.projectAdministrators.indexOf(myRecord) === -1)  // if the record is currently not an admin
+						Projects.update({_id:currentProject},{$push:{projectAdministrators: myRecord}});
+					else if (currProject.projectAdministrators.length>1)  // cannot deactivate only remaining admin
+							{
+							if (myRecord === Meteor.userId())  // if I am deactivating my own admin access, confirm it
+								$('#checkAdminDelete').modal();
+							else Projects.update({_id:currentProject},{$pull:{projectAdministrators: myRecord}});
+							}
+				}			
+			}
+		}
+}
 
 Template.manageProject.helpers ({
 	projectMembers: function() {
@@ -49,15 +73,15 @@ Template.manageProject.helpers ({
 		var currProject=Session.get("currentProject");
 		if (!(currProject))
 		{
-			return "";
+			return "btn-default";
 		}
 		else
 		{
 			var currProjectObject=Projects.findOne(currProject);
 			if (currProjectObject.projectAdministrators.indexOf(String(self)) === -1) // is not an administrator
-				return "";
+				return "btn-default";
 			else
-				return "Admin";
+				return "btn-success";
 		}
 	},	
 	canEdit: function() {
@@ -65,13 +89,13 @@ Template.manageProject.helpers ({
 		var currProject=Session.get("currentProject");
 		if (!(currProject))
 		{
-			return "";
+			return "disabled";
 		}
 		else
 		{
 			var currProjectObject=Projects.findOne(currProject);
-			if (currProjectObject.projectEditors.indexOf(String(self)) === -1) // is not an administrator
-				return "";
+			if (currProjectObject.projectEditors.indexOf(String(self)) === -1) 
+				return "disabled";
 			else
 				return "Editor";
 		}
@@ -81,13 +105,13 @@ Template.manageProject.helpers ({
 		var currProject=Session.get("currentProject");
 		if (!(currProject))
 		{
-			return "";
+			return "disabled";
 		}
 		else
 		{
 			var currProjectObject=Projects.findOne(currProject);
-			if (currProjectObject.projectDownload.indexOf(String(self)) === -1) // is not an administrator
-				return "";
+			if (currProjectObject.projectDownload.indexOf(String(self)) === -1) 
+				return "disabled";
 			else
 				return "canDownload";
 		}
@@ -97,13 +121,13 @@ Template.manageProject.helpers ({
 		var currProject=Session.get("currentProject");
 		if (!(currProject))
 		{
-			return "";
+			return "disabled";
 		}
 		else
 		{
 			var currProjectObject=Projects.findOne(currProject);
-			if (currProjectObject.projectPrint.indexOf(String(self)) === -1) // is not an administrator
-				return "";
+			if (currProjectObject.projectPrint.indexOf(String(self)) === -1) 
+				return "disabled";
 			else
 				return "canPrint";
 		}
@@ -113,19 +137,41 @@ Template.manageProject.helpers ({
 		var currProject=Session.get("currentProject");
 		if (!(currProject))
 		{
-			return "";
+			return "disabled";
 		}
 		else
 		{
 			var currProjectObject=Projects.findOne(currProject);
-			if (currProjectObject.projectView.indexOf(String(self)) === -1) // is not an administrator
-				return "";
+			if (currProjectObject.projectView.indexOf(String(self)) === -1) 
+				return "disabled";
 			else
 				return "canView";
 		}
 	},
 	isProjectLoaded: function () {
 		return (projectSubscription.ready());
+	},	
+	colleague: function() {
+		if (Accounts.loginServicesConfigured()) {
+			var myID=Meteor.userId();
+			if (myID) {
+				var retval=Meteor.user().colleagues;	//update to remove those already in the project!
+
+				return retval;
+			}
+		} else return null;
+	},
+	nameOrEmail: function () {
+		if (myTeam.ready()) {
+			var self=this;
+			if (self) { 
+			var colleague=Meteor.users.findOne({_id:String(self)});
+			if (colleague.username)
+				return colleague.username;
+			else if (colleague.emails.count()>0)
+				return colleague.emails[0].address;
+			}}
+		return null;
 	},
 	enterManageProject: function() {
 		//assumes called with the session variable currentProject set to the current project id.  
@@ -187,6 +233,7 @@ var activateInput = function (input) {
 };
 
 
+
 Template.manageProject.events ({
   
   'click .destroy': function () {
@@ -199,5 +246,12 @@ Template.manageProject.events ({
     activateInput(tmpl.find("#item-input"));
   },
 
+  'click .Admin': function() {
+  	return toggleAdmin(this);
+  },
+
+  'click #confirmDelete': function() {
+  		Projects.update({_id:Session.get("currentProject")},{$pull:{projectAdministrators: Meteor.userId()}});
+  }
 
 })
