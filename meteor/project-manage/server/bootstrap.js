@@ -40,6 +40,9 @@ Meteor.startup(function() {
     	user.colleagues=[];
     	user.invitations=[];  // invitations I've sent
     	user.includeDomain=false;
+      user.projectsVisited=[];
+      user.documentsVisited=[];
+      user.teamsVisited=[];
   		return user;
 	});
 	// create an admin user if they don't already exist
@@ -99,6 +102,15 @@ Meteor.users.allow({
   update: function (userId, doc, fields, modifier) {
   	if ((doc._id ===userId) && (fields.indexOf("includeDomain") > -1) && (fields.length === 1))
     	return true;
+    if ((doc._id ===userId) && (fields.indexOf("projectsVisited") > -1) && (fields.length === 1))
+      if ((modifier.$push) || (modifier.$pull) || (modifier.$set))
+        return true;
+    if ((doc._id ===userId) && (fields.indexOf("documentsVisited") > -1) && (fields.length === 1))
+      if ((modifier.$push) || (modifier.$pull))
+        return true;
+    if ((doc._id ===userId) && (fields.indexOf("teamsVisited") > -1) && (fields.length === 1))
+      if ((modifier.$push) || (modifier.$pull))
+        return true;
     if ((doc._id ===userId) && (fields.indexOf("colleagues") > -1) && (fields.length === 1))
     	if ((modifier.$push) || (modifier.$pull))
     		return true;

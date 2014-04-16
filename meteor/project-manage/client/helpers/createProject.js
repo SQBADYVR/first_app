@@ -124,7 +124,7 @@ Template.manageProject.helpers ({
 	isPublic: function() {
 		if (this.publicProject)
 		{
-			return "active";
+			return "checked";
 		}
 		else
 			return "";
@@ -133,7 +133,7 @@ Template.manageProject.helpers ({
 		if (this.publicProject)
 			return "";
 		else
-			return "active";
+			return "checked";
 	},
 	isNotPublic2: function() {
 		return (!(this.publicProject));
@@ -310,7 +310,32 @@ Template.manageProject.helpers ({
 			Session.set("currentProject",currProject);
 			}
 		return Projects.findOne(currProject);
-	}
+	},
+	updateRecentProjects: function() {
+		var currProject=Session.get("currentProject");
+		//write the push statemt to timestamp it and insert or update.
+		if(Accounts.loginServicesConfigured() && currProject)
+			{
+			var retval, i, foundFlag=false, foundIndex=0, removedVal;
+			var projectList=Meteor.user().projectsVisited;
+			for (i=0; i<projectList.length; i++)
+				{
+				if (projectList[i].projectID === currProject){
+						foundFlag=true;
+						foundIndex=i;
+				}}
+			if (foundFlag)
+			{
+				removedVal=projectList.splice(foundIndex,1);
+				projectList.unshift(removedVal[0]);
+			}
+			else
+			{
+				projectList.unshift({projectID: currProject});
+			}
+			retval=projectList.slice(0,10);
+			Meteor.users.update({_id:Meteor.userId()}, {$set: {projectsVisited: retval}});
+	}}
 })
 
 var okCancelEvents = function (selector, callbacks) {
@@ -387,6 +412,17 @@ Template.manageProject.events ({
   				return;
   			else Projects.update({_id:Session.get("currentProject")},{$push:{projectMembers: self}});
   		}
+  },
+  'click .btn-help': function() {
+  	if (this)
+  	{
+  		$('#helpOnProjects').modal();
+  	}
+  },
+  'click .projectType': function() {
+	var projType=$("input[name='optionsRadios']:checked",$('#projectType')).val();
+	var projBool=(projType === "private") ? false : true;
+    Projects.update({_id:Session.get("currentProject")},{$set: {publicProject: projBool}});
   }
 })
 

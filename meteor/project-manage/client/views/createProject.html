@@ -31,7 +31,27 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<div class="modal fade" id="helpOnProjects">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+       <h4 class="modal-title"><div class="alert alert-info">How To Use Projects</div></h4>
+      </div>
+      <div class="modal-body">
+        <p>This is where you set up a project, which is a collection of related documents (Requirements, DFMEA, PFMEA, etc.) used by one team.</p>
+        <p>Enter a project name in the space provided.  Note that this will show up in quick-links throughout cloudDesign, so it is recommended to make the name something you will associate with this project, rather than something like "New Project".</p>
+        <p>Choose whether to make this a public or private project.  Note that public projects are free to store and edit, as they support the open-source community.  All data on a public project is visible to any cloudDesign user.  Propriety projects should be made 'private'.  However, this will require all users except 'view-only' users to be paid subscribers to cloudDesign.  Note that if a project starts out as a public project and is later coverted to a private project, an archive of that project is kept available as a public project.</p>
+        <p>Add members to your project team.  These members can be chosen by userid or by email address, or they can be selected from your list of colleagues or your pre-established teams.  You can easily set permissions with a button click on each team member to show what rights they have: <ul><li>Admin:  Can update all aspects of the project, including permissions.  There must always be at least one admin for a project.</li><li>Editor:  Can edit the project contents, unless otherwise prevented by document-level permissions.</li><li>Download:  Can download the entire project file, including all documents.  Note that for public projects, this cannot be disabled.</li><li>Print:  Can print the project documents.  Note that view-only members can still do screen captures.</li><li>View:  Can see the project contents.  This permission is intended for people who need to audit the project data, but do not need detailed access.</li></ul></p>
+        <p>Finally, begin creating documents in your project using the blahblahblah</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="warning" class="btn btn-primary" data-dismiss="modal">OK</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
+{{updateRecentProjects}}
 {{#if isProjectLoaded}}
 	{{#with enterManageProject}}
 	<div class="permission-wrapper">
@@ -46,17 +66,17 @@
         </div>
         </form>
     </div>
-    <div class="projectType">
+    <div class="projectType" id="projectType">
     	<h4>Privacy Setting</h4>
     	<div class="radio">
   			<label class="{{isPublic}}">
-  			  	<input type="radio" name="optionsRadios" id="public" value="public" >
+  			  	<input type="radio" name="optionsRadios" id="public" value="public" {{isPublic}} >
   			  	<span class="glyphicon glyphicon-globe"></span> Public Project:  Anyone on designCloud can view, download, and print.  You decide who can administer and edit.
  			 </label>
 		</div>
 		<div class="radio">
  			<label class="{{isNotPublic}}">
-    			<input type="radio" name="optionsRadios" id="private" value="private">
+    			<input type="radio" name="optionsRadios" id="private" value="private" {{isNotPublic}}>
     			<span class="glyphicon glyphicon-lock"></span> Private Project:  You decide who can administer, edit, download, print, or view project data.  All users except view-only must be paid subscribers.
   			</label>
 		</div>
