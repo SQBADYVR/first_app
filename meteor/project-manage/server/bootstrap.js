@@ -9,10 +9,6 @@ Meteor.publish('myProjects' ,function() {
 
 Projects.allow({
   update: function(userId, doc, fields, modifier){
-    console.log(userId);
-    console.log(doc);
-    console.log(fields);
-    console.log(modifier);
     return (doc.projectAdministrators.indexOf(userId)>-1);
   },
   insert: function(userId, doc) {

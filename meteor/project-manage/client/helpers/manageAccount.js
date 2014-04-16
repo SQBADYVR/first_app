@@ -59,6 +59,7 @@ var matchMyDomain=function(doc, index, cursor) {
 
 var handler=Meteor.setInterval(function() {
 	if (Accounts.loginServicesConfigured()) {
+		if (Meteor.user())
 		if (Meteor.user().includeDomain)  // if autoaccepting same domain name invites
 		{	var me=Meteor.user();
 			var invitedMe=Meteor.users.find({invitations: {$in: [me.username, me.emails[0].address]}}).fetch();  // fix for username or email

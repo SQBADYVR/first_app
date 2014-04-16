@@ -293,6 +293,9 @@ Template.manageProject.helpers ({
 					{
 					projectName: "New Project",
 					publicProject: true,
+					projectDescription:"",
+					projectRevision: {major: 0, minor: 1},
+					projectArchiveLinks: [],
 					projectMembers: [Meteor.userId()],
 					projectAdministrators: [Meteor.userId()],
 					projectEditors: [Meteor.userId()],
@@ -310,6 +313,20 @@ Template.manageProject.helpers ({
 			Session.set("currentProject",currProject);
 			}
 		return Projects.findOne(currProject);
+	},
+	projectDescription: function() {
+		if (this)
+			if (this.projectDescription)
+				return this.projectDescription;
+		return "Enter project description"
+	},
+	revNumber: function() {
+		if (this)
+			if (this.projectRevision)
+			{ retval = this.projectRevision.major+"."+this.projectRevision.minor;
+			return retval;
+			}
+		return "No Rev";
 	},
 	updateRecentProjects: function() {
 		var currProject=Session.get("currentProject");
@@ -423,6 +440,12 @@ Template.manageProject.events ({
 	var projType=$("input[name='optionsRadios']:checked",$('#projectType')).val();
 	var projBool=(projType === "private") ? false : true;
     Projects.update({_id:Session.get("currentProject")},{$set: {publicProject: projBool}});
+  },
+  'click .btn-rev-minor': function() {
+  	;
+  },
+  'click .btn-rev-major': function() {
+  	;
   }
 })
 
