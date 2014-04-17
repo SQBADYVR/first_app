@@ -33,6 +33,7 @@ Router.map(function() {
 
 	this.route('editDFMEA', {
 		path: '/editDFMEA',
-		layoutTemplate: 'layout'
+		layoutTemplate: 'layout',
+		template: 'dfmea'
 	})
 });

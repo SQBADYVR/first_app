@@ -1,0 +1,38 @@
+<template name="dfmea">
+
+<div class="table-responsive">
+<table class="table table-condensed table-bordered">
+{{#each rowOfArray}}
+	<tr>
+	{{#each processRow}}
+		<td rowspan="{{rowSpan}}">
+		{{content}}
+		</td>
+		{{#if designEffect}}
+		<td rowspan="{{rowSpan}}">
+		{{SEV}}
+		</td>
+		<td rowspan="{{rowSpan}}">
+		{{classification}}
+		</td>
+		{{/if}}
+		{{#if designCause}}
+		<td>
+		{{OCC}}
+		</td>
+		<td>
+		{{designControl}}
+		</td>
+		<td>
+		{{DET}}
+		</td>
+		<td>
+		{{RPN}}
+		</td>
+		{{/if}}
+	{{/each}}
+	</tr>
+{{/each}}
+</table>
+</div>
+</template>
