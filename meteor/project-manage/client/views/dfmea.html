@@ -2,37 +2,140 @@
 
 <div class="table-responsive">
 <table class="table table-condensed table-bordered">
+<thead>
+	<tr>
+	<th colspan="8">
+	DFMEA Scope: {{scopeItem}}
+	</th>
+	<th colspan="3">
+	{{#if canEdit}}
+	<div class="DFMEA-revision">Revision: {{Major}}:{{Minor}}</div>
+		  <div class="btn-group FMEA-revision">
+            <button type="button" class="btn btn-default btn-xs btn-rev-major inactive">Rev Major</button>
+            <button type="button" class="btn btn-default btn-xs btn-rev-minor inactive">Rev Minor</button>
+          </div>
+    {{/if}}
+	<div>Created: </div>
+	<div>Revised: </div>
+	</th>
+	</tr>
+	<tr>
+	<th id="designFctn">
+	Function(s)
+	</th>
+	<th id="failureModes">
+	Potential Failure Mode
+	</th>
+	<th id="desEffect">
+	Potential Effect(s) of Failure
+	</th>
+	<th id="SEV">
+	Sev
+	</th>
+	<th id="classification">
+	Class
+	</th>
+	<th id="designCause">
+	Potential Cause(s)/ Mechanism(s) of Failure
+	</th>
+	<th id="OCC">
+	Occ
+	</th>
+	<th id="designControl">
+	Current Design Control(s)
+	</th>
+	<th id="DET">
+	Det
+	</th>
+	<th id="RPN">
+	RPN
+	</th>
+	<th>
+	Action Items
+	</th>
+	</tr>
+</thead>
+<tbody>
 {{#each rowOfArray}}
 	<tr>
 	{{#each processRow}}
-		<td rowspan="{{rowSpan}}">
-		{{content}}
+		<td rowspan="{{rowSpan}}" class="nodeContent {{nodeKind}}">
+		{{#if editing "Content"}}
+      		<div class="edit nodeContentEdit">
+      		<div class="input-group">
+        	<textarea id="content-input" type="text" class="nodeContentEdit form-control" value="{{content}}" placeholder="{{content}}"></textarea>
+        	</div>
+      		</div>
+    	{{else}}
+			{{content}}
+		{{/if}}
+		{{#if canEdit}}
+		<div class="btn-group">
+  			<button type="button" class="btn btn-default btn-xs" ><span title="Add new {{nodeText}} below"   class="glyphicon glyphicon-plus"></span></button>
+  			<button type="button" class="btn btn-default btn-xs" ><span title="Copy this {{nodeText}} and all dependent items" class="glyphicon glyphicon-file"></span></button>
+  			<button type="button" class="btn btn-default btn-xs disabled" ><span ttitle="Delete this {{nodeText}} and all dependent items" class="glyphicon glyphicon-trash"></span></button>
+		</div>
+		{{/if}}
 		</td>
 		{{#if designEffect}}
-		<td rowspan="{{rowSpan}}">
+		<td rowspan="{{rowSpan}}" class="SEV">
+		{{#if editing "SEV"}}
+		<div class="input-group edit SEVedit">
+		   	<input id="SEV-input" type="text" class="SEVEdit form-control" value="{{SEV}}" />
+      	</div>
+ 		{{else}}
 		{{SEV}}
+		{{/if}}
 		</td>
-		<td rowspan="{{rowSpan}}">
+		<td rowspan="{{rowSpan}}" class="Classification">
+		{{#if editing "Class"}}
+     		<div class="edit classEdit input-group">
+        	<input id="class-input" type="text" class="classEdit form-control" value="{{classification}}" />
+      		</div>
+		{{else}}
 		{{classification}}
+		{{/if}}
 		</td>
 		{{/if}}
-		{{#if designCause}}
-		<td>
+		{{#if designCause "Cause"}}
+		<td class="OCC">
+		{{#if editing "OCC"}}
+     		<div class="edit OCCEdit input-group">
+        	<textarea id="OCC-input" type="text" class="OCCEdit form-control" value="{{OCC}}" placeholder="{{OCC}}"></textarea>
+      		</div>
+		{{else}}
 		{{OCC}}
+		{{/if}}
 		</td>
-		<td>
+		<td class="designControl">
+		{{#if editing "designControl"}}
+     		<div class="edit designControlEdit input-group">
+        	<textarea id="designControl-input" type="text" class="designControlEdit form-control" value="{{designControl}}" placeholder="{{designControl}}"></textarea>
+      		</div>
+		{{else}}
 		{{designControl}}
+		{{/if}}
 		</td>
-		<td>
+		<td class="DET">
+		{{#if editing "DET"}}
+     		<div class="edit DETEdit input-group">
+        	<input id="DET-input" type="text" class="DETEdit form-control" value="{{DET}}" />
+      		</div>
+		{{else}}
 		{{DET}}
+		{{/if}}
 		</td>
-		<td>
+		<td class="RPN">
 		{{RPN}}
+		</td>
+		<td class="ActionItems">
+		Placeholder
 		</td>
 		{{/if}}
 	{{/each}}
 	</tr>
 {{/each}}
+</tbody>
 </table>
 </div>
 </template>

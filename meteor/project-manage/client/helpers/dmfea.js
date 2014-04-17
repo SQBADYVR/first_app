@@ -1,3 +1,11 @@
+// Need to make help lessons
+// Need to fix security for write access to matrix
+// Need to fix security for write to remote file
+// Need to fix revisioining
+// Need to build out the choose DFMEA
+// Need to build out nested DFMEA
+// Need to build out autogenerating FM
+
 DFMEAs=new Meteor.Collection('dfmeas');
 var dfmeaSubscription=Meteor.subscribe('dfmeas');
 
@@ -85,6 +93,214 @@ Template.dfmea.helpers ({
 	},
 	RPN: function() {
 		return 1000;
-	}
-
+	},
+	canEdit: function() {
+		return true;  // need to put in logic to check permissions
+	},
+	editing: function(editType) {
+		if (editType)
+			return (Session.equals('editing_itemname', this._id) && (Session.equals('editField', editType)) && Template.dfmea.canEdit());  //need to fix the display on this		
+		else
+			return (Session.equals('editing_itemname', this._id) && Template.dfmea.canEdit());
+}
 });
+
+var okCancelEvents = function (selector, callbacks) {
+  var ok = callbacks.ok || function () {};
+  var cancel = callbacks.cancel || function () {};
+  var events = {};
+  events['keyup '+selector+', keydown '+selector+', focusout '+selector] =
+    function (evt) {
+      if (evt.type === "keydown" && evt.which === 27) {
+        // escape = cancel
+        cancel.call(this, evt);
+
+      } else if (evt.type === "keyup" && evt.which === 13 ||
+                 evt.type === "focusout") {
+        // blur/return/enter = ok/submit if non-empty
+        var value = String(evt.target.value || "");
+        if (value)
+          ok.call(this, value, evt);
+        else
+          cancel.call(this, evt);
+      }
+    };
+
+  return events;
+};
+
+var activateInput = function (input) {
+  input.focus();
+  input.select();
+};
+
+Template.dfmea.events(okCancelEvents(
+  '#content-input',
+  {
+    ok: function (text, evt) {
+      DFMEAs.update({_id: this._id},{
+        $set: {content: text,
+        timestamp: (new Date()).getTime(),
+      }});
+      Session.set("editing_itemname", null);
+      Session.set('editField',null);
+    },
+	cancel: function () {
+      Session.set('editing_itemname', null);
+      Session.set('editField',null);
+    }})
+);
+
+Template.dfmea.events(okCancelEvents(
+  '#SEV-input',
+  {
+    ok: function (text, evt) {
+      DFMEAs.update({_id: this._id},{
+        $set: {SEV: text,
+        timestamp: (new Date()).getTime(),
+      }});
+      Session.set("editing_itemname", null);
+      Session.set('editField',null);
+    },
+	cancel: function () {
+      Session.set('editing_itemname', null);
+      Session.set('editField',null);
+    }})
+);
+
+Template.dfmea.events(okCancelEvents(
+  '#OCC-input',
+  {
+    ok: function (text, evt) {
+      DFMEAs.update({_id: this._id},{
+        $set: {OCC: text,
+        timestamp: (new Date()).getTime(),
+      }});
+      Session.set("editing_itemname", null);
+      Session.set('editField',null);
+    },
+	cancel: function () {
+      Session.set('editing_itemname', null);
+      Session.set('editField',null);
+    }})
+);
+
+
+Template.dfmea.events(okCancelEvents(
+  '#DET-input',
+  {
+    ok: function (text, evt) {
+      DFMEAs.update({_id: this._id},{
+        $set: {DET: text,
+        timestamp: (new Date()).getTime(),
+      }});
+      Session.set("editing_itemname", null);
+      Session.set('editField',null);
+    },
+	cancel: function () {
+      Session.set('editing_itemname', null);
+      Session.set('editField',null);
+    }})
+);
+
+Template.dfmea.events(okCancelEvents(
+  '#class-input',
+  {
+    ok: function (text, evt) {
+      DFMEAs.update({_id: this._id},{
+        $set: {classification: text,
+        timestamp: (new Date()).getTime(),
+      }});
+      Session.set("editing_itemname", null);
+      Session.set('editField',null);
+    },
+	cancel: function () {
+      Session.set('editing_itemname', null);
+      Session.set('editField',null);
+    }})
+);
+
+Template.dfmea.events(okCancelEvents(
+  '#designControl-input',
+  {
+    ok: function (text, evt) {
+      DFMEAs.update({_id: this._id},{
+        $set: {designControl: text,
+        timestamp: (new Date()).getTime(),
+      }});
+      Session.set("editing_itemname", null);
+      Session.set('editField',null);
+    },
+	cancel: function () {
+      Session.set('editing_itemname', null);
+      Session.set('editField',null);
+    }})
+);
+Template.dfmea.events ({
+
+  'click .destroy': function () {
+    return null;
+  },
+  'dblclick .nodeContent': function (evt, tmpl) {
+    Session.set('editing_itemname', this._id);
+    Session.set('editField',"Content");
+    Deps.flush(); // update DOM before focus
+    activateInput(tmpl.find("#content-input"));
+  },
+   'dblclick .SEV': function (evt, tmpl) {
+    Session.set('editing_itemname', this._id);
+    Session.set('editField',"SEV");
+    Deps.flush(); // update DOM before focus
+    activateInput(tmpl.find("#SEV-input"));
+  },   
+  'dblclick .Classification': function (evt, tmpl) {
+    Session.set('editing_itemname', this._id);
+    Session.set('editField',"Class");
+    Deps.flush(); // update DOM before focus
+    activateInput(tmpl.find("#class-input"));
+  },
+   'dblclick .designControl': function (evt, tmpl) {
+    Session.set('editing_itemname', this._id);
+    Session.set('editField',"designControl");
+    Deps.flush(); // update DOM before focus
+    activateInput(tmpl.find("#designControl-input"));
+  }, 
+  'dblclick .OCC': function (evt, tmpl) {
+    Session.set('editing_itemname', this._id);
+    Session.set('editField',"OCC");
+    Deps.flush(); // update DOM before focus
+    activateInput(tmpl.find("#OCC-input"));
+  },
+   'dblclick .DET': function (evt, tmpl) {
+    Session.set('editing_itemname', this._id);
+    Session.set('editField',"DET");
+    Deps.flush(); // update DOM before focus
+    activateInput(tmpl.find("#DET-input"));
+  },
+  'click .btn-add-to-project': function() {
+  		if (this)
+  		{
+  			var self=String(this);
+  			if (self === "")	
+  				return;
+  			else Projects.update({_id:Session.get("currentProject")},{$push:{projectMembers: self}});
+  		}
+  },
+  'click .btn-help': function() {
+  	if (this)
+  	{
+  		$('#helpOnProjects').modal();
+  	}
+  },
+  'click .projectType': function() {
+	var projType=$("input[name='optionsRadios']:checked",$('#projectType')).val();
+	var projBool=(projType === "private") ? false : true;
+    Projects.update({_id:Session.get("currentProject")},{$set: {publicProject: projBool}});
+  },
+  'click .btn-rev-minor': function() {
+  	;
+  },
+  'click .btn-rev-major': function() {
+  	;
+  }
+})
