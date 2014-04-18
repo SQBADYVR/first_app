@@ -23,6 +23,7 @@ var FMEA_root = {
 		creation_date : timestamp,
 		revision_date : timestamp,
 	},
+	content: "Upper left mounting bracket for the inboard left landing gear on the right hand side of the aircraft wing when equipped with deicing.  Part number: 4",
 	nodeKind : "FMEAroot",
 	parentcategory : null,
 	parentProject: [],

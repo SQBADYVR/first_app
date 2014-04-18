@@ -3,8 +3,16 @@
 <table class="table table-condensed table-bordered">
 <thead>
 	<tr>
-	<th colspan="7">
-	DFMEA Scope: {{scopeItem}}
+	<th colspan="7" class="scopeEdit">	
+   		<div class="edit scopeEdit">
+   		{{#if editing "Scope"}}
+   			<div class="input-group scopeEdit form-control">
+      		DFMEA Scope: <textarea id="scope-input" type="text" class="scopeEdit form-control" value="{{scopeItem}}" placeholder="{{scopeItem}}"></textarea>
+   			</div>
+		{{else}}
+			DFMEA Scope: {{scopeItem}}
+		{{/if}}
+		</div>
 	</th>
 	<th colspan="4">
 	{{#if canEdit}}

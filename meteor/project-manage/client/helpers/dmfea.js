@@ -128,22 +128,23 @@ var stuffArray = function() {
 }
 
 Template.dfmea.helpers ({
-
+	scopeItem: function() {
+		headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
+		if (headerNode)
+			return headerNode.content;
+	},
 	Major: function(){
-		if (!(headerNode))
-				headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
+		headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
 		if (headerNode)
 			return headerNode.revision.major;
 	},
 	Minor: function() {
-		if (!(headerNode))
-				headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
+		headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
 		if (headerNode)
 			return headerNode.revision.minor;
 	},
 	createDate: function(){
-		if (!(headerNode))
-				headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
+		headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
 		if (headerNode)
 		{
 		var d= new Date(headerNode.header.creation_date);
@@ -153,9 +154,8 @@ Template.dfmea.helpers ({
 		}
 	},
 	revisedDate: function() {
-		if (!(headerNode))
-				headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
-			if (headerNode)
+		headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
+		if (headerNode)
 		{
 		var d= new Date(headerNode.header.revision_date);
 		var retval=String(d.getMonth()+1)
@@ -335,10 +335,32 @@ Template.dfmea.events(okCancelEvents(
     }})
 );
 
+Template.dfmea.events(okCancelEvents(
+  '#scope-input',
+  {
+    ok: function (text, evt) {
+      DFMEAs.update({_id: Session.get("currentDFMEA")},{
+        $set: {content: text,
+        timestamp: (new Date()).getTime(),
+      }});
+      Session.set("editing_itemname", null);
+      Session.set('editField',null);
+    },
+	cancel: function () {
+      Session.set('editing_itemname', null);
+      Session.set('editField',null);
+    }})
+);
 Template.dfmea.events ({
 
   'click .destroy': function () {
     return null;
+  },
+  'dblclick .scopeEdit': function (evt, tmpl) {
+    Session.set('editing_itemname', this._id);
+    Session.set('editField',"Scope");
+    Deps.flush(); // update DOM before focus
+    activateInput(tmpl.find("#scope-input"));
   },
   'dblclick .nodeContent': function (evt, tmpl) {
     Session.set('editing_itemname', this._id);
