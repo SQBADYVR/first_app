@@ -45,6 +45,7 @@ Meteor.startup(function() {
 				content: "Design Function" + i,
 				parentProject: [],
 				rootID: FMEA_id,
+				rowSpan:1,
 				sortOrder: i*1000000000+Math.random()*100000000
 			});
 			DFMEAs.update({_id: FMEA_id}, {$push: {subcategories: fctn_id}});
@@ -57,7 +58,8 @@ Meteor.startup(function() {
 					content: "Doesn't work" + j,
 					parentProject:[],
 					rootID: FMEA_id,
-					sortOrder: i*1000000000+Math.random()*100000000
+					rowSpan:1,
+					sortOrder: j*1000000000+Math.random()*100000000
 				});
 				DFMEAs.update({_id: fctn_id}, {$push: {subcategories: fmode_id}});
 				for ( k = 0; k < Math.floor(Math.random() * 5) + 1; k++) {
@@ -71,7 +73,8 @@ Meteor.startup(function() {
 						classification: "YC",
 						parentProject:[],
 						rootID: FMEA_id,
-						sortOrder: i*1000000000+Math.random()*100000000
+						rowSpan:1,
+						sortOrder: k*1000000000+Math.random()*100000000
 					});
 					DFMEAs.update({_id: fmode_id}, {$push: {subcategories: effects_id}});
 					for ( l = 0; l < Math.floor(Math.random() * 5) + 1; l++) {
@@ -86,7 +89,8 @@ Meteor.startup(function() {
 							DET: Math.floor(Math.random() * 10) + 1,
 							parentProject:[],
 							rootID: FMEA_id,
-							sortOrder: i*1000000000+Math.random()*100000000
+							rowSpan:1,
+							sortOrder: l*1000000000+Math.random()*100000000
 						});
 						DFMEAs.update({
 							_id: effects_id

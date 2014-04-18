@@ -1,22 +1,21 @@
 <template name="dfmea">
-
 <div class="table-responsive">
 <table class="table table-condensed table-bordered">
 <thead>
 	<tr>
-	<th colspan="8">
+	<th colspan="7">
 	DFMEA Scope: {{scopeItem}}
 	</th>
-	<th colspan="3">
+	<th colspan="4">
 	{{#if canEdit}}
-	<div class="DFMEA-revision">Revision: {{Major}}:{{Minor}}</div>
+	<div class="DFMEA-revision">Revision: {{Major}}.{{Minor}}</div>
 		  <div class="btn-group FMEA-revision">
             <button type="button" class="btn btn-default btn-xs btn-rev-major inactive">Rev Major</button>
             <button type="button" class="btn btn-default btn-xs btn-rev-minor inactive">Rev Minor</button>
           </div>
     {{/if}}
-	<div>Created: </div>
-	<div>Revised: </div>
+	<div>Created: {{createDate}}</div>
+	<div>Revised: {{revisedDate}}</div>
 	</th>
 	</tr>
 	<tr>
@@ -51,7 +50,7 @@
 	RPN
 	</th>
 	<th>
-	Action Items
+	Action Item(s)
 	</th>
 	</tr>
 </thead>
@@ -131,7 +130,12 @@
 		{{RPN}}
 		</td>
 		<td class="ActionItems">
-		Placeholder
+			<div class="btn-group">
+	  			<button type="button" class="btn btn-default btn-xs btn-RAIL-add" ><span title="Add new action item"   class="glyphicon glyphicon-plus"></span></button>
+	  			{{#if RAILitems}}
+  				<button type="button" class="btn btn-default btn-xs btn-RAIL-review" ><span title="Copy this {{nodeText}} and all dependent items" class="glyphicon glyphicon-list"></span></button>
+  				{{/if}}
+		</div>
 		</td>
 		{{/if}}
 	{{/each}}

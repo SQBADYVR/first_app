@@ -8,6 +8,7 @@
 
 DFMEAs=new Meteor.Collection('dfmeas');
 var dfmeaSubscription=Meteor.subscribe('dfmeas');
+var headerNode=null;
 
 var buildNewCause = function(parentNodeID,oldNode,promptText)  {
   		var newNode=new Object;
@@ -71,14 +72,14 @@ var stuffArray = function() {
 		var currentNode=designFunctionCursor.fetch();
 		for (i=0; i<designFunctionCursor.count(); i++) {
 			var stuffObj={};
-			_.extend(stuffObj,currentNode[i],{rowSpan: 0});
+			_.extend(stuffObj,currentNode[i],{rowSpan: 1});
 			var DFchildren=currentNode[i].subcategories;
 			currentRow.push(stuffObj);
 			var failureModeCursor=DFMEAs.find({_id: {$in: DFchildren}},{sort: {sortOrder: 1}});
 			var currentNode2=failureModeCursor.fetch();
 			for (j=0; j< DFchildren.length; j++){
 				var stuffObject={};
-				_.extend(stuffObject,currentNode2[j],{rowSpan:0});
+				_.extend(stuffObject,currentNode2[j],{rowSpan:1});
 				currentRow.push(stuffObject);
 				var FMchildren=currentNode2[j].subcategories;
 				var failureEffectsCursor=DFMEAs.find({_id: {$in: FMchildren}},{sort: {sortOrder: 1}});
@@ -110,7 +111,7 @@ var stuffArray = function() {
 			stuffArray[firstPointer][0].rowSpan=i-firstPointer;
 			firstPointer=i;
 		}
-		if ((rowLength>2) && (rowLength>=oldRowLength)) {
+		if ((rowLength>2)) {
 			stuffArray[secondPointer][stuffArray[secondPointer].length-3].rowSpan=i-secondPointer;
 			secondPointer=i;
 		}
@@ -127,6 +128,41 @@ var stuffArray = function() {
 }
 
 Template.dfmea.helpers ({
+
+	Major: function(){
+		if (!(headerNode))
+				headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
+		if (headerNode)
+			return headerNode.revision.major;
+	},
+	Minor: function() {
+		if (!(headerNode))
+				headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
+		if (headerNode)
+			return headerNode.revision.minor;
+	},
+	createDate: function(){
+		if (!(headerNode))
+				headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
+		if (headerNode)
+		{
+		var d= new Date(headerNode.header.creation_date);
+		var retval=String(d.getMonth()+1)
+		retval+="/"+d.getDate()+"/"+d.getFullYear();
+		return retval;
+		}
+	},
+	revisedDate: function() {
+		if (!(headerNode))
+				headerNode=DFMEAs.findOne({_id: Session.get("currentDFMEA")});
+			if (headerNode)
+		{
+		var d= new Date(headerNode.header.revision_date);
+		var retval=String(d.getMonth()+1)
+		retval+="/"+d.getDate()+"/"+d.getFullYear();
+		return retval;
+		}
+	},
 	rowOfArray: function(){
 		return stuffArray();
 	},
@@ -155,6 +191,9 @@ Template.dfmea.helpers ({
 		if ((parent) && parent.subcategories && parent.subcategories.length > 1)
 			return true;
 		else return false;
+	},
+	RAILitems: function() {
+		return false;
 	},
 	editing: function(editType) {
 		if (editType)
@@ -372,10 +411,115 @@ Template.dfmea.events ({
   		}
   },
   'click .btn-failureMode-add': function() {
-  	if (this)
-  		buildNewFM(this.parentCategory);
- 	},
-  'click .btn-designFunction-delete': function() {
+   		if (this)
+  		{
+  		var newFMNode=new Object;
+  		jQuery.extend(newFMNode, this);
+  		newFMNode.timestamp=(new Date()).getTime();
+  		newFMNode.content="New Failure Mode";
+  		newFMNode.rowSpan=1;
+  		newFMNode.subcategories=[];
+  		delete newFMNode._id;
+  		var parentNode=DFMEAs.findOne({_id: this.parentCategory});
+  		var catLength=parentNode.subcategories.length;
+  		var peers=parentNode.subcategories;
+  		var position=-1;
+  		if (catLength>1)
+  			{
+  				_.sortBy(peers,function(item) {return DFMEAs.findOne({_id:item},{sortOrder:1}).sortOrder});
+  				position=peers.indexOf(this._id);
+  			}
+  		else position=0;
+  		if (position>=catLength-1)
+  			newFMNode.sortOrder=this.sortOrder*2;
+  		else
+  		{
+  			nextSortOrder=DFMEAs.findOne({_id:peers[position+1]},{sortOrder:1}).sortOrder;
+  			newFMNode.sortOrder=0.5*(this.sortOrder+nextSortOrder);
+  		}
+  		var newFunction=DFMEAs.insert(newFMNode);
+  		peers.splice(position+1,0,String(newFunction));		
+  		DFMEAs.update({_id:newFMNode.parentCategory},
+  					{$set:{subcategories: peers}});
+   		buildNewEffect(newFunction, this.subcategories[0],"New Potential Effect(s)");
+
+  		}
+  },
+  'click .btn-failureEffects-add': function() {
+   		if (this)
+  		{
+  		var newFMNode=new Object;
+  		jQuery.extend(newFMNode, this);
+  		newFMNode.timestamp=(new Date()).getTime();
+  		newFMNode.content="New Potential Effect(s)";
+  		newFMNode.rowSpan=1;
+  		newFMNode.subcategories=[];
+  		newFMNode.SEV=10;
+  		newFMNode.Classification=" ";
+  		delete newFMNode._id;
+  		var parentNode=DFMEAs.findOne({_id: this.parentCategory});
+  		var catLength=parentNode.subcategories.length;
+  		var peers=parentNode.subcategories;
+  		var position=-1;
+  		if (catLength>1)
+  			{
+  				_.sortBy(peers,function(item) {return DFMEAs.findOne({_id:item},{sortOrder:1}).sortOrder});
+  				position=peers.indexOf(this._id);
+  			}
+  		else position=0;
+  		if (position>=catLength-1)
+  			newFMNode.sortOrder=this.sortOrder*2;
+  		else
+  		{
+  			nextSortOrder=DFMEAs.findOne({_id:peers[position+1]},{sortOrder:1}).sortOrder;
+  			newFMNode.sortOrder=0.5*(this.sortOrder+nextSortOrder);
+  		}
+  		var newFunction=DFMEAs.insert(newFMNode);
+  		peers.splice(position+1,0,String(newFunction));		
+  		DFMEAs.update({_id:newFMNode.parentCategory},
+  					{$set:{subcategories: peers}});
+  		buildNewCause(newFunction, this.subcategories[0],"Potential Cause(s)");
+
+  		}
+  },
+    'click .btn-failureCauses-add': function() {
+   		if (this)
+  		{
+  		var newFMNode=new Object;
+  		jQuery.extend(newFMNode, this);
+  		newFMNode.timestamp=(new Date()).getTime();
+  		newFMNode.content="Potential Causes(s)";
+  		newFMNode.rowSpan=1;
+  		newFMNode.subcategories=[];
+  		newFMNode.OCC=10;
+  		newFMNode.DET=10;
+		newFMNode.designControl="Design Control(s)";
+
+  		delete newFMNode._id;
+  		var parentNode=DFMEAs.findOne({_id: this.parentCategory});
+  		var catLength=parentNode.subcategories.length;
+  		var peers=parentNode.subcategories;
+  		var position=-1;
+  		if (catLength>1)
+  			{
+  				_.sortBy(peers,function(item) {return DFMEAs.findOne({_id:item},{sortOrder:1}).sortOrder});
+  				position=peers.indexOf(this._id);
+  			}
+  		else position=0;
+  		if (position>=catLength-1)
+  			newFMNode.sortOrder=this.sortOrder*2;
+  		else
+  		{
+  			nextSortOrder=DFMEAs.findOne({_id:peers[position+1]},{sortOrder:1}).sortOrder;
+  			newFMNode.sortOrder=0.5*(this.sortOrder+nextSortOrder);
+  		}
+  		var newFunction=DFMEAs.insert(newFMNode);
+  		peers.splice(position+1,0,String(newFunction));		
+  		DFMEAs.update({_id:newFMNode.parentCategory},
+  					{$set:{subcategories: peers}});
+  		}
+  },
+  'click .btn-designFunction-delete, click .btn-failureMode-delete, click .btn-failureEffects-delete, click .btn-failureCauses-delete': function() {
   	if (this)
   	{
   		var self=this;
