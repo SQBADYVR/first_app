@@ -67,28 +67,28 @@ var stuffArray = function() {
 	currentRow=[];
 	if (Session.get('currentDFMEA') && dfmeaSubscription.ready())
 	{	var rootNode=DFMEAs.findOne({nodeKind:"FMEAroot"}); // need to make sure it's the right DFMEA
-		designFunctionCursor=DFMEAs.find({_id: {$in: rootNode.subcategories}}); 
+		designFunctionCursor=DFMEAs.find({_id: {$in: rootNode.subcategories}},{sort: {sortOrder: 1}}); 
 		var currentNode=designFunctionCursor.fetch();
 		for (i=0; i<designFunctionCursor.count(); i++) {
 			var stuffObj={};
 			_.extend(stuffObj,currentNode[i],{rowSpan: 0});
 			var DFchildren=currentNode[i].subcategories;
 			currentRow.push(stuffObj);
-			var failureModeCursor=DFMEAs.find({_id: {$in: DFchildren}});
+			var failureModeCursor=DFMEAs.find({_id: {$in: DFchildren}},{sort: {sortOrder: 1}});
 			var currentNode2=failureModeCursor.fetch();
 			for (j=0; j< DFchildren.length; j++){
 				var stuffObject={};
 				_.extend(stuffObject,currentNode2[j],{rowSpan:0});
 				currentRow.push(stuffObject);
 				var FMchildren=currentNode2[j].subcategories;
-				var failureEffectsCursor=DFMEAs.find({_id: {$in: FMchildren}});
+				var failureEffectsCursor=DFMEAs.find({_id: {$in: FMchildren}},{sort: {sortOrder: 1}});
 				var currentNode3=failureEffectsCursor.fetch();
 				for (k=0; k< FMchildren.length; k++) {
 					var stuffObject3={};
 					_.extend(stuffObject3,currentNode3[k],{rowSpan:currentNode3[k].subcategories.length});
 					currentRow.push(stuffObject3);
 					var FEchildren=currentNode3[k].subcategories;
-					var failureCauseCursor=DFMEAs.find({_id: {$in: FEchildren}});
+					var failureCauseCursor=DFMEAs.find({_id: {$in: FEchildren}},{sort: {sortOrder: 1}});
 					var currentNode4=failureCauseCursor.fetch();
 					for (l=0; l< FEchildren.length; l++) {
 						var stuffObject4={};
@@ -149,6 +149,12 @@ Template.dfmea.helpers ({
 	},
 	canEdit: function() {
 		return true;  // need to put in logic to check permissions
+	},
+	deletable: function() {
+		var parent=DFMEAs.findOne({_id: this.parentCategory});
+		if ((parent) && parent.subcategories && parent.subcategories.length > 1)
+			return true;
+		else return false;
 	},
 	editing: function(editType) {
 		if (editType)
@@ -341,10 +347,27 @@ Template.dfmea.events ({
   		newFunctionNode.rowSpan=1;
   		newFunctionNode.subcategories=[];
   		delete newFunctionNode._id;
+  		var parentNode=DFMEAs.findOne({_id: this.parentCategory});
+  		var catLength=parentNode.subcategories.length;
+  		var peers=parentNode.subcategories;
+  		var position=-1;
+  		if (catLength>1)
+  			{
+  				_.sortBy(peers,function(item) {return DFMEAs.findOne({_id:item},{sortOrder:1}).sortOrder});
+  				position=peers.indexOf(this._id);
+  			}
+  		else position=0;
+  		if (position>=catLength-1)
+  			newFunctionNode.sortOrder=this.sortOrder*2;
+  		else
+  		{
+  			nextSortOrder=DFMEAs.findOne({_id:peers[position+1]},{sortOrder:1}).sortOrder;
+  			newFunctionNode.sortOrder=0.5*(this.sortOrder+nextSortOrder);
+  		}
   		var newFunction=DFMEAs.insert(newFunctionNode);
-  		var parentSubcategoryArray=DFMEAs.findOne({_id:newFunctionNode.parentCategory}).subcategories;
-  		parentSubcategoryArray.splice(parentSubcategoryArray.indexOf(this._id)+1,0,newFunction);
-  		DFMEAs.update({_id:newFunctionNode.parentCategory},{$set:{subcategories:parentSubcategoryArray}});
+  		peers.splice(position+1,0,String(newFunction));		
+  		DFMEAs.update({_id:newFunctionNode.parentCategory},
+  					{$set:{subcategories: peers}});
   		buildNewFM(newFunction,this.subcategories[0],"New Failure Mode");
   		}
   },
@@ -352,6 +375,15 @@ Template.dfmea.events ({
   	if (this)
   		buildNewFM(this.parentCategory);
  	},
+  'click .btn-designFunction-delete': function() {
+  	if (this)
+  	{
+  		var self=this;
+  		if (this.parentCategory)
+  			DFMEAs.update({_id: this.parentCategory},{$pull: {subcategories: this._id}}); //unhook from parent
+  			DFMEAs.update({_id: String(this.rootID)},{$push: {undoStack: this._id}});
+  	}
+  },
   'click .btn-help': function() {
   	if (this)
   	{

@@ -73,7 +73,9 @@
 		<div class="btn-group">
   			<button type="button" class="btn btn-default btn-xs btn-{{nodeKind}}-add" ><span title="Add new {{nodeText}} below"   class="glyphicon glyphicon-plus"></span></button>
   			<button type="button" class="btn btn-default btn-xs btn-{{nodeKind}}-copy" ><span title="Copy this {{nodeText}} and all dependent items" class="glyphicon glyphicon-file"></span></button>
-  			<button type="button" class="btn btn-default btn-xs  btn-{{nodeKind}}-delete disabled" ><span ttitle="Delete this {{nodeText}} and all dependent items" class="glyphicon glyphicon-trash"></span></button>
+  			{{#if deletable}}
+  			<button type="button" class="btn btn-default btn-xs  btn-{{nodeKind}}-delete" ><span ttitle="Delete this {{nodeText}} and all dependent items" class="glyphicon glyphicon-trash"></span></button>
+  			{{/if}}
 		</div>
 		{{/if}}
 		</td>

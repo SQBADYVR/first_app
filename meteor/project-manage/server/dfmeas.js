@@ -24,11 +24,12 @@ var FMEA_root = {
 		revision_date : timestamp,
 	},
 	nodeKind : "FMEAroot",
-	parent_category : null,
+	parentcategory : null,
 	parentProject: [],
 	subcategories : [],
-	revision: {major: 0, minor: 1},
-}
+	undoStack: [],
+	revision: {major: 0, minor: 1}
+	}
 
 Meteor.startup(function() {
 
@@ -42,7 +43,9 @@ Meteor.startup(function() {
 				parentCategory: FMEA_id,
 				subcategories: [],
 				content: "Design Function" + i,
-				parentProject: []
+				parentProject: [],
+				rootID: FMEA_id,
+				sortOrder: i*1000000000+Math.random()*100000000
 			});
 			DFMEAs.update({_id: FMEA_id}, {$push: {subcategories: fctn_id}});
 			for ( j = 0; j < Math.floor(Math.random() * 3) + 1; j++) {
@@ -52,7 +55,9 @@ Meteor.startup(function() {
 					parentCategory: fctn_id,
 					subcategories: [],
 					content: "Doesn't work" + j,
-					parentProject:[]
+					parentProject:[],
+					rootID: FMEA_id,
+					sortOrder: i*1000000000+Math.random()*100000000
 				});
 				DFMEAs.update({_id: fctn_id}, {$push: {subcategories: fmode_id}});
 				for ( k = 0; k < Math.floor(Math.random() * 5) + 1; k++) {
@@ -64,7 +69,9 @@ Meteor.startup(function() {
 						content: "Everyone dies" + k,
 						SEV: Math.floor(Math.random() * 10) + 1,
 						classification: "YC",
-						parentProject:[]
+						parentProject:[],
+						rootID: FMEA_id,
+						sortOrder: i*1000000000+Math.random()*100000000
 					});
 					DFMEAs.update({_id: fmode_id}, {$push: {subcategories: effects_id}});
 					for ( l = 0; l < Math.floor(Math.random() * 5) + 1; l++) {
@@ -77,7 +84,9 @@ Meteor.startup(function() {
 							OCC: Math.floor(Math.random() * 10) + 1,
 							designControl: "Test regimen that has a long-ass list of stuff like thermal shock, shake and bake, drop testing, and other stuff",
 							DET: Math.floor(Math.random() * 10) + 1,
-							parentProject:[]
+							parentProject:[],
+							rootID: FMEA_id,
+							sortOrder: i*1000000000+Math.random()*100000000
 						});
 						DFMEAs.update({
 							_id: effects_id
