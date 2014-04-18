@@ -39,7 +39,7 @@ Meteor.startup(function() {
 			var fctn_id = DFMEAs.insert({
 				nodeKind: "designFunction",
 				nodeText: "Design Function",
-				parent_category: FMEA_id,
+				parentCategory: FMEA_id,
 				subcategories: [],
 				content: "Design Function" + i,
 				parentProject: []
@@ -49,7 +49,7 @@ Meteor.startup(function() {
 				var fmode_id = DFMEAs.insert({
 					nodeKind: "failureMode",
 					nodeText: "Failure Mode",
-					parent_category: fctn_id,
+					parentCategory: fctn_id,
 					subcategories: [],
 					content: "Doesn't work" + j,
 					parentProject:[]
@@ -59,7 +59,7 @@ Meteor.startup(function() {
 					var effects_id = DFMEAs.insert({
 						nodeKind: "failureEffects",
 						nodeText: "Effect of Failure",
-						parent_category: fmode_id,
+						parentCategory: fmode_id,
 						subcategories: [],
 						content: "Everyone dies" + k,
 						SEV: Math.floor(Math.random() * 10) + 1,
@@ -71,7 +71,7 @@ Meteor.startup(function() {
 						var cause_id = DFMEAs.insert({
 							nodeKind: "failureCauses",
 							nodeText: "Potential Cause",
-							parent_category: effects_id,
+							parentCategory: effects_id,
 							subcategories: [],
 							content: "Something broke" + l,
 							OCC: Math.floor(Math.random() * 10) + 1,

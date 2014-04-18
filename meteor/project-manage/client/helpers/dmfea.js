@@ -9,18 +9,66 @@
 DFMEAs=new Meteor.Collection('dfmeas');
 var dfmeaSubscription=Meteor.subscribe('dfmeas');
 
+var buildNewCause = function(parentNodeID,oldNode,promptText)  {
+  		var newNode=new Object;
+  		var oldNodeDetail=DFMEAs.findOne({_id:oldNode});
+  		jQuery.extend(newNode, oldNodeDetail);
+  		newNode.timestamp=(new Date()).getTime();
+  		newNode.content=promptText;
+  		newNode.rowSpan=1;
+  		newNode.subcategories=[];
+  		newNode.parentCategory=parentNodeID;
+  		newNode.OCC=10;
+  		newNode.DET=10;
+  		newNode.designControl="Design Control(s)"
+  		delete newNode._id;
+  		var newlyCreatedNode=DFMEAs.insert(newNode);
+  		DFMEAs.update({_id:parentNodeID},{$push: {subcategories: newlyCreatedNode}});
+   		};
+
+var buildNewEffect = function(parentNodeID,oldNode,promptText)  {
+  		var newNode=new Object;
+  		var oldNodeDetail=DFMEAs.findOne({_id:oldNode});
+  		jQuery.extend(newNode, oldNodeDetail);
+  		newNode.timestamp=(new Date()).getTime();
+  		newNode.content=promptText;
+  		newNode.rowSpan=1;
+  		newNode.subcategories=[];
+  		newNode.parentCategory=parentNodeID;
+  		newNode.SEV=10;
+  		newNode.Classification="";
+  		delete newNode._id;
+  		var newlyCreatedNode=DFMEAs.insert(newNode);
+  		DFMEAs.update({_id:parentNodeID},{$push: {subcategories: newlyCreatedNode}});
+  		buildNewCause(newlyCreatedNode, oldNodeDetail.subcategories[0],"Potential Cause(s)");
+  		};
+
+var buildNewFM = function(parentNodeID,oldNode,promptText)  {
+  		var newNode=new Object;
+  		var oldNodeDetail=DFMEAs.findOne({_id:oldNode});
+  		jQuery.extend(newNode, oldNodeDetail);
+  		newNode.timestamp=(new Date()).getTime();
+  		newNode.content=promptText;
+  		newNode.rowSpan=1;
+  		newNode.subcategories=[];
+  		newNode.parentCategory=parentNodeID;
+  		delete newNode._id;
+  		var newlyCreatedNode=DFMEAs.insert(newNode);
+  		DFMEAs.update({_id:parentNodeID},{$push: {subcategories: newlyCreatedNode}});
+  		buildNewEffect(newlyCreatedNode, oldNodeDetail.subcategories[0],"New Potential Effect(s)");
+  		};
+
 var stuffArray = function() {
 	var i,j,k,l;
-	var designFunctionCursor;
+	var designFunctionCursor=[];
 	var currentRow=new Array();
 	var stuffArray=new Array();
 	var rowCount=0;
-
 	currentRow=[];
 	if (Session.get('currentDFMEA') && dfmeaSubscription.ready())
-	{
-		designFunctionCursor=DFMEAs.find({nodeKind: "designFunction"})  // need to make sure it's the right DFMEA
-		var currentNode=designFunctionCursor.fetch()
+	{	var rootNode=DFMEAs.findOne({nodeKind:"FMEAroot"}); // need to make sure it's the right DFMEA
+		designFunctionCursor=DFMEAs.find({_id: {$in: rootNode.subcategories}}); 
+		var currentNode=designFunctionCursor.fetch();
 		for (i=0; i<designFunctionCursor.count(); i++) {
 			var stuffObj={};
 			_.extend(stuffObj,currentNode[i],{rowSpan: 0});
@@ -62,7 +110,7 @@ var stuffArray = function() {
 			stuffArray[firstPointer][0].rowSpan=i-firstPointer;
 			firstPointer=i;
 		}
-		if ((rowLength>2) && (rowLength> oldRowLength)) {
+		if ((rowLength>2) && (rowLength>=oldRowLength)) {
 			stuffArray[secondPointer][stuffArray[secondPointer].length-3].rowSpan=i-secondPointer;
 			secondPointer=i;
 		}
@@ -70,9 +118,12 @@ var stuffArray = function() {
 	}
 	stuffArray[firstPointer][0].rowSpan=i-firstPointer;
 	stuffArray[secondPointer][stuffArray[secondPointer].length-3].rowSpan=i-secondPointer;
-	return stuffArray;
+		return stuffArray;
 	}
-	else return "";
+	else 
+		{
+			return "";
+		}
 }
 
 Template.dfmea.helpers ({
@@ -92,7 +143,9 @@ Template.dfmea.helpers ({
 		return this.nodeKind==="failureCauses";
 	},
 	RPN: function() {
-		return 1000;
+		var SEV=DFMEAs.findOne({_id:this.parentCategory}).SEV;
+		var retval = this.DET*this.OCC*SEV;
+		return retval;
 	},
 	canEdit: function() {
 		return true;  // need to put in logic to check permissions
@@ -236,6 +289,7 @@ Template.dfmea.events(okCancelEvents(
       Session.set('editField',null);
     }})
 );
+
 Template.dfmea.events ({
 
   'click .destroy': function () {
@@ -277,15 +331,27 @@ Template.dfmea.events ({
     Deps.flush(); // update DOM before focus
     activateInput(tmpl.find("#DET-input"));
   },
-  'click .btn-add-to-project': function() {
+  'click .btn-designFunction-add': function() {
   		if (this)
   		{
-  			var self=String(this);
-  			if (self === "")	
-  				return;
-  			else Projects.update({_id:Session.get("currentProject")},{$push:{projectMembers: self}});
+  		var newFunctionNode=new Object;
+  		jQuery.extend(newFunctionNode, this);
+  		newFunctionNode.timestamp=(new Date()).getTime();
+  		newFunctionNode.content="New Function";
+  		newFunctionNode.rowSpan=1;
+  		newFunctionNode.subcategories=[];
+  		delete newFunctionNode._id;
+  		var newFunction=DFMEAs.insert(newFunctionNode);
+  		var parentSubcategoryArray=DFMEAs.findOne({_id:newFunctionNode.parentCategory}).subcategories;
+  		parentSubcategoryArray.splice(parentSubcategoryArray.indexOf(this._id)+1,0,newFunction);
+  		DFMEAs.update({_id:newFunctionNode.parentCategory},{$set:{subcategories:parentSubcategoryArray}});
+  		buildNewFM(newFunction,this.subcategories[0],"New Failure Mode");
   		}
   },
+  'click .btn-failureMode-add': function() {
+  	if (this)
+  		buildNewFM(this.parentCategory);
+ 	},
   'click .btn-help': function() {
   	if (this)
   	{
