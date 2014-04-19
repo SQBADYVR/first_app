@@ -18,8 +18,8 @@
 	{{#if canEdit}}
 	<div class="DFMEA-revision">Revision: {{Major}}.{{Minor}}</div>
 		  <div class="btn-group FMEA-revision">
-            <button type="button" class="btn btn-default btn-xs btn-rev-major">Rev Major</button>
-            <button type="button" class="btn btn-default btn-xs btn-rev-minor">Rev Minor</button>
+            <button type="button" class="btn btn-default btn-xs btn-rev-major"><span title="Archive a snapshot of this DFMEA and roll the major revision number.">Rev Major</span></button>
+            <button type="button" class="btn btn-default btn-xs btn-rev-minor"><span title="Archive a snapshot of this DFMEA and roll the minor revision number.">Rev Minor</span></button>
           </div>
     {{/if}}
 	<div>Created: {{createDate}}</div>
@@ -79,7 +79,7 @@
 		{{#if canEdit}}
 		<div class="btn-group">
   			<button type="button" class="btn btn-default btn-xs btn-{{nodeKind}}-add" ><span title="Add new {{nodeText}} below"   class="glyphicon glyphicon-plus"></span></button>
-  			<button type="button" class="btn btn-default btn-xs btn-{{nodeKind}}-copy" ><span title="Copy this {{nodeText}} and all dependent items" class="glyphicon glyphicon-file"></span></button>
+  			<button type="button" class="btn btn-default btn-xs btn-{{nodeKind}}-copy disabled" ><span title="Copy this {{nodeText}} and all dependent items" class="glyphicon glyphicon-file"></span></button>
   			{{#if deletable}}
   			<button type="button" class="btn btn-default btn-xs  btn-{{nodeKind}}-delete" ><span ttitle="Delete this {{nodeText}} and all dependent items" class="glyphicon glyphicon-trash"></span></button>
   			{{/if}}
