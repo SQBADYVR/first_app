@@ -29,6 +29,7 @@ var FMEA_root = {
 	parentProject: [],
 	subcategories : [],
 	undoStack: [],
+	archivedStack:[],
 	revision: {major: 0, minor: 1}
 	}
 
