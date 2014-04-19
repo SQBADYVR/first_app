@@ -123,6 +123,27 @@ Template.manageAccount.helpers ({
 		}
 		return null;
 	},
+	firstName: function() {
+		if (Accounts.loginServicesConfigured()) {
+			var myID=Meteor.userId();
+			if (myID)
+		  		if (Meteor.user().firstName)
+					return Meteor.user().firstName;
+				else return " ";
+		}
+		return null;
+	},
+	lastName: function() {
+		if (Accounts.loginServicesConfigured()) {
+			var myID=Meteor.userId();
+			if (myID)
+		  		if (Meteor.user().lastName)
+					return Meteor.user().lastName;
+				else return " ";
+
+		}
+		return null;
+	},
 	email: function() {
 		if (Accounts.loginServicesConfigured()) {
 			var myID=Meteor.userId();
@@ -194,6 +215,13 @@ Template.manageAccount.helpers ({
 	listInvited: function() {
 		return this;
 	},
+	editFirstName: function() {
+		return (Session.get("editingFirstName"));
+	},
+	editLastName: function() {
+		return (Session.get("editingLastName"));
+	},
+
 	myDomainName: function() {
 		if (Accounts.loginServicesConfigured()) {
 			var myID=Meteor.userId();
@@ -233,6 +261,16 @@ Template.manageAccount.events ({
 
   'click .btn-reject-invite': function () {
   	rejectInvite(this);
+  },
+  'dblclick .last-name-edit': function(evt,tmpl) {
+  	Session.set("editingLastName",true);
+    Deps.flush(); // force DOM redraw, so we can focus the edit field
+    activateInput(tmpl.find("#editLastName"));
+  },
+  'dblclick .first-name-edit': function(evt,tmpl) {
+  	Session.set("editingFirstName",true);
+    Deps.flush(); // force DOM redraw, so we can focus the edit field
+    activateInput(tmpl.find("#editFirstName"));
   }
 
 });
@@ -255,3 +293,39 @@ Template.manageAccount.events(okCancelEvents(
       ;
     }
   }));
+
+Template.manageAccount.events(okCancelEvents(
+  '#editFirstName',
+  {
+    ok: function (text, evt) {	
+      if ((text) && Accounts.loginServicesConfigured())
+      {
+      	Meteor.users.update({_id: Meteor.userId()},{$set: {firstName: text}});
+      	// need to write function to generate email for non-registered user.
+      	// calling server method inviteNewUser(text) to check for existence of the user and invitation if they 
+      	// don't exist.
+      }
+      evt.target.value='';
+     Session.set("editingFirstName",null);},
+    cancel: function () {
+     Session.set("editingFirstName",null);  ;
+ 	 }
+     }));
+
+Template.manageAccount.events(okCancelEvents(
+  '#editLastName',
+  {
+    ok: function (text, evt) {	
+      if ((text) && Accounts.loginServicesConfigured())
+      {
+      	Meteor.users.update({_id: Meteor.userId()},{$set: {lastName: text}});
+      	// need to write function to generate email for non-registered user.
+      	// calling server method inviteNewUser(text) to check for existence of the user and invitation if they 
+      	// don't exist.
+      }
+      evt.target.value='';
+     Session.set("editingLastName",null);},
+    cancel: function () {
+      Session.set("editingLastName",null);
+  }
+    }));

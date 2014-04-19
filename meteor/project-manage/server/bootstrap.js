@@ -48,7 +48,12 @@ Meteor.startup(function() {
 			'username': 'admin',
 			'email': 'admin@test.com',
 			'emails': ['admin@test.com'],
-			'password': 'admin'
+			'password': 'admin',
+      'firstName':"",
+      'lastName':"",
+      "companyName":"",
+      "contactAddress":"",
+      "phoneNumber":""
 		});
 	}
 	
@@ -60,7 +65,12 @@ Meteor.startup(function() {
 				'username': email,
 				'email': email,
 				'emails': [email],
-				'password': 'password'
+				'password': 'password',
+      'firstName':"",
+      'lastName':"",
+      "companyName":"",
+      "contactAddress":"",
+      "phoneNumber":""
 			};
 			var tempID = Accounts.createUser(profileOptions);
 			Meteor.users.update({username:"admin"},{$push:{"colleagues":tempID}});
@@ -96,6 +106,20 @@ Meteor.publish('invited', function() {
 
 Meteor.users.allow({
   update: function (userId, doc, fields, modifier) {
+    if ((doc._id ===userId) && (fields.indexOf("phoneNumber") > -1) && (fields.length === 1))
+      if (modifier.$set) return true;
+    if ((doc._id ===userId) && (fields.indexOf("contactAddress") > -1) && (fields.length === 1))
+      if (modifier.$set)
+        return true;
+    if ((doc._id ===userId) && (fields.indexOf("companyName") > -1) && (fields.length === 1))
+      if (modifier.$set)
+        return true;
+    if ((doc._id ===userId) && (fields.indexOf("lastName") > -1) && (fields.length === 1))
+      if (modifier.$set)
+        return true;
+    if ((doc._id ===userId) && (fields.indexOf("firstName") > -1) && (fields.length === 1))
+      if (modifier.$set)
+        return true;
   	if ((doc._id ===userId) && (fields.indexOf("includeDomain") > -1) && (fields.length === 1))
     	return true;
     if ((doc._id ===userId) && (fields.indexOf("projectsVisited") > -1) && (fields.length === 1))
@@ -119,7 +143,6 @@ Meteor.users.allow({
     if ((fields.indexOf("invitations") > -1) && (fields.length === 1))  //if we're dealing with invitations
     	{
     	var myRecord=Meteor.users.findOne(userId);
-
     	if ((doc.invitations) && (doc.invitations.indexOf(myRecord.username) > -1))  // and the person has invited me.  == may need to
     																		// update for username and email rather than _id
     	{
@@ -135,9 +158,7 @@ Meteor.users.allow({
     			if ((doc.invitations) && (doc.invitations.indexOf(myRecord.emails[0].address) > -1)) 
     				if ((modifier.$pull) && (modifier.$pull.invitations === myRecord.emails[0].address))
     					return true;
-
     		}
-
     }
     if ((fields.indexOf("colleagues") > -1) && (fields.length === 1))  //if we're dealing with a user who has invited me to be a colleague
     	if ((doc.invitations) && (doc.invitations.indexOf(userId) > -1))  // and the person has invited me.  == may need to

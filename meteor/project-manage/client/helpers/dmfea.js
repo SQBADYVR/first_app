@@ -562,13 +562,13 @@ Template.dfmea.events ({
     Projects.update({_id:Session.get("currentProject")},{$set: {publicProject: projBool}});
   },
   'click .btn-rev-minor': function() {
-  	deepClone(Session.get("currentDFMEA"),DFMEAs);
+  	Meteor.call("deepClone",Session.get("currentDFMEA"),DFMEAs);
   	DFMEAs.update({_id: Session.get("currentDFMEA")},{
   													$set: {"revision.minor": Template.dfmea.Minor()+1,
   															"header.revision_date": (new Date()).getTime()}});
   },
   'click .btn-rev-major': function() {
-  	deepClone(Session.get("currentDFMEA"),DFMEAs);
+  	Meteor.call("deepClone",Session.get("currentDFMEA"),DFMEAs);
    	DFMEAs.update({_id: Session.get("currentDFMEA")},{
   													$set: {"revision.major": Template.dfmea.Major()+1,
   															"revision.minor": 0,

@@ -114,6 +114,14 @@ var toggleView=function(myRecord) {
 		}
 }
 
+var defaultUserPublic=function() {
+	if (Accounts.loginServicesConfigured())
+		if (Meteor.userId())
+			if (Meteor.userId().paidSubscriber)
+				return false;
+	return true;
+}
+
 Template.manageProject.helpers ({
 	projectMembers: function() {
 		return this.projectMembers;
@@ -292,7 +300,7 @@ Template.manageProject.helpers ({
 				newProject=Projects.insert(
 					{
 					projectName: "New Project",
-					publicProject: true,
+					publicProject: defaultUserPublic,
 					projectDescription:"",
 					projectRevision: {major: 0, minor: 1},
 					projectArchiveLinks: [],
