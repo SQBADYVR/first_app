@@ -187,7 +187,7 @@ Template.manageAccount.helpers ({
 			var colleague=Meteor.users.findOne({_id:String(self)});
 			if (colleague.username)
 				return colleague.username;
-			else if (colleague.emails.count()>0)
+			else if (colleague.emails.length>0)
 				return colleague.emails[0].address;
 			}}
 		return null;

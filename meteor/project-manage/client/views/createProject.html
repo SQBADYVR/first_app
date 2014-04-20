@@ -87,7 +87,7 @@
         <form role="form">
           <div class="form-group">
             <label for="projectDescription"><h4>Project Description</h4></label>
-            <input type="textarea" rows="6" class="form-control" id="projectDescription" placeholder="{{projectDescription}}">
+            <input type="textarea" rows="6" class="form-control projectDescription" id="projectDescription" placeholder="{{projectDescription}}">
           </div>
         </form>
       </div>
@@ -110,7 +110,10 @@
     </div>
     <div id="collapseTwo" class="panel-collapse collapse">
       <div class="panel-body">
-       Placeholder for document stuff
+       {{#each listOfDocuments}}
+       <div>
+       <a class="btn btn-link btn-lg" href="{{docLink}}" role="button"><div><small>{{docType}}</small></div><span class="glyphicon glyphicon-file big-glyphs"></span><span class="help-block">{{docName}}</span></a></div>
+       {{/each}}
       </div>
     </div>
   </div>

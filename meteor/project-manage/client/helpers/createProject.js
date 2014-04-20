@@ -129,6 +129,71 @@ Template.manageProject.helpers ({
 	projectMember: function() {
 		return this;
 	},
+	listOfDocuments: function() {
+		var retval=[];
+		var currProjectObject=this;
+		var tempKey=[],
+			tempKey2=[],
+			i;
+		if(currProjectObject) {
+			tempKey=[];
+			for (i=0; i<currProjectObject.DFMEAlinks.length;i++)
+				tempKey.push("Design FMEA");
+			retval=_.zip(tempKey,(currProjectObject.DFMEAlinks));
+			tempKey=[];
+			for (i=0; i<currProjectObject.PFMEAlinks.length;i++)
+				tempKey.push("Process FMEA");
+			tempKey2=_.zip(tempKey,currProjectObject.PFMEAlinks)
+			retval=retval.concat(tempKey2);
+			tempKey=[];
+			for (i=0; i<currProjectObject.DVPRlinks.length;i++)
+				tempKey.push("DVP&R");
+			tempKey2=_.zip(tempKey2,(currProjectObject.DVPRlinks));
+			retval=retval.concat(tempKey2);
+			tempKey=[];
+			for (i=0; i<currProjectObject.RequirementsLink.length;i++)
+				tempKey.push("Requirements");
+			tempKey2=_.zip(tempKey,currProjectObject.RequirementsLink);
+			retval=retval.concat(tempKey2);
+			tempKey=[];
+			for (i=0; i<currProjectObject.ControlPlanLinks.length;i++)
+				tempKey.push("Control Plans");
+			tempKey2=_.zip(tempKey2,(currProjectObject.ControlPlanLinks));
+			retval=retval.concat(tempKey2);
+			tempKey=[];
+			for (i=0; i<currProjectObject.PVPRlinks.length;i++)
+				tempKey.push("PVR&P");
+			tempKey2=_.zip(tempKey,currProjectObject.PVPRlinks);
+			retval=retval.concat(tempKey2);
+			tempKey=[];
+			for (i=0; i<currProjectObject.MiscDocs.length;i++)
+				tempKey.push("Document");
+			tempKey2=_.zip(tempKey,currProjectObject.MiscDocs);
+			retval=retval.concat(tempKey2);
+			}
+		return retval;
+	},
+	docLink: '#',
+	docType: function()
+	{
+		if (this)
+			return this[0];
+	},
+	docName: function(){
+		var retval;
+		if (this) {
+			switch (this[0]) {
+				case "Design FMEA": {
+					if (this[1])
+						retval=DFMEAs.findOne({_id: this[1]},{header: 1});
+						if (retval.header)
+							return retval.header.title;
+					break;
+				}
+				default:  return null;
+			}
+		}
+	},
 	isPublic: function() {
 		if (this.publicProject)
 		{
@@ -155,15 +220,17 @@ Template.manageProject.helpers ({
 
 		if (userDude)
 		{
-			if (!userDude.username)
+			if (userDude.username)
 			{
+				return userDude.username;
+			}
+			else if (userDude.emails)
+				if (userDude.emails.length>0)
+				{
 				return userDude.emails[0].address;
-			}
-			else {
-				return  userDude.username;
-			}
+				}
 		}
-		return null;
+		return "Hidden User";
 	},
 	isAdmin: function() {
 		var self=this;
@@ -286,7 +353,7 @@ Template.manageProject.helpers ({
 			var colleague=Meteor.users.findOne({_id:String(self)});
 			if (colleague.username)
 				return colleague.username;
-			else if (colleague.emails.count()>0)
+			else if (colleague.emails.length>0)
 				return colleague.emails[0].address;
 			}}
 		return null;
@@ -315,7 +382,8 @@ Template.manageProject.helpers ({
 					DVPRlinks:[],
 					RequirementsLink:[],
 					ControlPlanLinks:[],
-					PVPRlinks:[]
+					PVPRlinks:[],
+					MiscDocs:[]
 					});
 			currProject=newProject;
 			Session.set("currentProject",currProject);
@@ -360,8 +428,8 @@ Template.manageProject.helpers ({
 			}
 			retval=projectList.slice(0,10);
 			Meteor.users.update({_id:Meteor.userId()}, {$set: {projectsVisited: retval}});
-	}}
-})
+	}
+}})
 
 var okCancelEvents = function (selector, callbacks) {
   var ok = callbacks.ok || function () {};
@@ -392,7 +460,33 @@ var activateInput = function (input) {
   input.select();
 };
 
+Template.manageProject.events(okCancelEvents(
+  '#project-name-input',
+  {
+    ok: function (text, evt) {	
+      if ((text) && Accounts.loginServicesConfigured())
+      {
+      	Projects.update({_id: Session.get("currentProject")},{$set: {projectName: text}});
+      }
+      evt.target.value='';
+  },
+    cancel: function () {
+  	 }
+     }));
 
+Template.manageProject.events(okCancelEvents(
+  '#projectDescription',
+  {
+    ok: function (text, evt) {	
+      if ((text) && Accounts.loginServicesConfigured())
+      {
+      	Projects.update({_id: Session.get("currentProject")},{$set: {projectDescription: text}});
+      }
+      evt.target.value='';
+  },
+    cancel: function () {
+  	 }
+     }));
 
 Template.manageProject.events ({
   
@@ -400,11 +494,15 @@ Template.manageProject.events ({
     return null;
   },
 
-  'dblclick .display': function (evt, tmpl) {
-    Session.set('editing_itemname', this[0]);
-    Deps.flush(); // update DOM before focus
-    activateInput(tmpl.find("#item-input"));
-  },
+//  'dblclick .project-name-input': function (evt, tmpl) {
+//    Deps.flush(); // update DOM before focus
+//    activateInput(tmpl.find("#project-name-input"));
+//  },
+
+//  'dblclick .projectDescription': function (evt, tmpl) {
+//     Deps.flush(); // update DOM before focus
+//    activateInput(tmpl.find("#projectDescription"));
+//  },
 
   'click .Admin': function() {
   	return toggleAdmin(this);

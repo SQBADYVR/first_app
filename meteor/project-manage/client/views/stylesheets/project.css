@@ -45,3 +45,7 @@ span.glyphicon {
 	height: 300px;
 	overflow: auto;
 }
+
+.big-glyphs {
+	font-size: 2.5em !important;
+}
