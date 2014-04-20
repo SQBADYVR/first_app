@@ -10,6 +10,14 @@ Template.header.helpers ({
 		}
 		else return null;
 	},
+	projectID: function() {
+		return (this.projectID);
+	},
+	moduleName: function() {
+		if (Session.get("moduleName"))
+		return (Session.get("moduleName"));
+		return null;
+	},
 	retrieveProject: function() {
 		if (this.projectID)
 		{	

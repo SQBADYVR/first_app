@@ -9,7 +9,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">cloudDesign&#8482; cDFMEA&#8482;</a>
+      <a class="navbar-brand" href="#">cloudDesign&#8482; {{moduleName}}</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -23,7 +23,7 @@
             <li><strong>Recent Projects:</strong></li>
             {{/if}}
             {{#each anyProjects}}
-            <li><a href="#">{{retrieveProject}}</a></li>
+            <li><a href="/manageProjects/{{projectID}}">{{retrieveProject}}</a></li>
             {{/each}}
             {{#if anyProjects}}
             <li class="divider"></li>

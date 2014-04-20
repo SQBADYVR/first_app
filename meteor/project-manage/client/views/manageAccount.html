@@ -48,6 +48,9 @@
 			<li class="list-group-item">
 			<span><input id="autoAcceptInvite" type="checkbox" {{autoAcceptInvite}}>  Automatically accept invitations from emails with your same domain name ({{myDomainName}})</span>
 			</li>
+			<li class="list-group-item">
+			<span><input id="shareEmailOnProjects" type="checkbox" class="list-checkbox" {{autoAcceptInvite}}>  Allow people on projects with me to see my name and email.  (Recommended)</span>
+			</li>		
 			</ul>
 		</div>
 		<div class="col-sm-4">
@@ -76,7 +79,7 @@
     		<div id="collapseTwo" class="panel-collapse collapse">
       			<div class="panel-body">
 					<div class="col-sm-4">
-						<div class="page-header"><h4>Invite someone to become a colleague</h4></div>
+						<h4>Invite someone to become a colleague</h4>
 						<form class="form-inline" role="form">
   							<div class="form-group">
    								<label class="sr-only" for="newInvitation">Invite someone to become a colleague:</label>
@@ -84,13 +87,13 @@
     							<span class="help-block">For security reasons, you will not see any information about other users until they accept your invitation.  When you send the invitation, the receipient will see your username, email, and/or name.  Please check email address carefully before submitting.</span>
 							</div>
 						</form>
-						<div class="page-header"><h4>Invitations I Have Sent</h4></div>
+						<h4>Invitations I Have Sent</h4>
 						<ul class="list-group">
 							{{#each usersIveInvited}}
 							<li class="list-group-item">
 							<div class="invitee">
 								<div class="btn-group">
-									<button type="button" class="btn btn-default btn-rescind-invitation">Cancel Invitation</button>
+									<button type="button" class="btn btn-default btn-rescind-invitation">Cancel</button>
 								</div>
 							{{listInvited}}	 	
 							</div>
@@ -99,7 +102,7 @@
 						</ul>
 					</div>
 					<div class="col-sm-4">
-						<div class="page-header"><h4>Invitations I Have Received</h4></div>
+						<h4>Invitations I Have Received</h4>
 						<ul class="list-group">
 							{{#each invitedUser}}
 							<li class="list-group-item">
@@ -115,7 +118,7 @@
 						</ul>
 					</div>
 					<div class="col-sm-4">
-						<div class="page-header"><h4>My Colleagues</h4></div>
+						<h4>My Colleagues</h4>
 							<ul class="list-group colleague-list">
 								{{#each colleague}}
 								<li class="list-group-item">

@@ -5,14 +5,28 @@ Router.map(function() {
 		layoutTemplate: 'layout'
 		});
 
+	this.route('loginAlert', {
+		path: '/login',
+		template: 'login',
+		layoutTemplate: 'layout',
+    	onBeforeAction: function() {
+    		Session.set("moduleName","");
+    	}
+	}	);
+
 	this.route('manageAccount',{
 		path: '/manageAccount',
 		layoutTemplate: 'layout',
 		waitOn: function () {
+    		if (!(Meteor.user()))
+    		{
+    		console.log("bounced");
+    		Router.go('loginAlert');	//reroute to login screen
+    		}
 			return [Meteor.subscribe('teammates') && Accounts.loginServicesConfigured()];
 		},
 		onBeforeAction: function() {
-			console.log('in router');
+			Session.set("moduleName","Account Manager");
 		}
 	})
 
@@ -25,15 +39,57 @@ Router.map(function() {
     	onBeforeAction: function() {
     		if (!(Meteor.user()))
     		{
+			Session.set("moduleName","Project Manager")
     		console.log("bounced");
-    		Router.go('home');	//reroute to login screen
+    		Router.go('loginAlert');	//reroute to login screen
     		}
     	}
 	})
 
 	this.route('editDFMEA', {
+		path: '/editDFMEA/:id',
+		layoutTemplate: 'layout',
+		template: 'dfmea',
+		onBeforeAction: function() {
+ 			if(!(Meteor.user()))
+ 				{Router.go('loginAlert');
+ 					}
+ 			else
+ 			{
+ 			Session.set("moduleName","cDFMEA&#8482;")
+ 			Session.set("currentDFMEA",this.params._id);
+ 			}
+ 		}
+	})
+
+	this.route('editDFMEA', {
 		path: '/editDFMEA',
 		layoutTemplate: 'layout',
-		template: 'dfmea'
+		template: 'dfmea',
+		onBeforeAction: function() {
+ 			if(!(Meteor.user()))
+ 				{
+ 				Router.go('loginAlert');
+ 				}
+ 			else
+ 			{
+ 			Session.set("moduleName","cDFMEA&#8482;")
+ 			}			
+ 		}
 	})
+
+	this.route('manageProjects', {
+	    path: '/manageProjects/:_id',
+ 		layoutTemplate: 'layout',
+ 		template: 'manageProject',
+ 		onBeforeAction: function() {
+ 			if(!(Meteor.user()))
+ 				{Router.go('loginAlert');}
+ 			else
+ 			{
+			Session.set("moduleName","Project Manager")
+			Session.set("currentProject",this.params._id);
+ 			}
+ 		}
+  	});
 });
